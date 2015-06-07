@@ -2848,13 +2848,7 @@ ra_dma_addr_t RtmpDrvPciMapSingle(
 	IN size_t size,
 	IN INT sd_idx,
 	IN INT direction);
-ra_dma_addr_t RtmpDrvPciUnMapSingle(
-	IN struct rt2x00_dev *rt2x00dev,
-	IN VOID *ptr,
-	IN size_t size,
-	IN INT direction);
 #define PCI_MAP_SINGLE					RtmpDrvPciMapSingle
-#define PCI_UNMAP_SINGLE					RtmpDrvPciUnMapSingle
 VOID TDDFDDExclusiveRequest(
         IN struct rt2x00_dev *rt2x00dev, 
 	UCHAR CoexMode 
@@ -2902,11 +2896,6 @@ VOID MT76x0_Calibration(
 
 VOID NICUpdateRawCounters(
 	struct rt2x00_dev *rt2x00dev);
-
-VOID SendLEDCmd(
-	struct rt2x00_dev *rt2x00dev,
-	IN ULONG	LEDMode,
-	IN ULONG	Para);
 
 void RtmpAllocDescBuf(
 	IN struct rt2x00_dev *rt2x00dev,
