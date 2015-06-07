@@ -2349,6 +2349,7 @@ struct rt2x00_dev {
 	 */
 	struct work_struct rxdone_work;
 	struct work_struct txdone_work;
+	work_func_t txdone_workfn;
 
 	/*
 	 * Powersaving work

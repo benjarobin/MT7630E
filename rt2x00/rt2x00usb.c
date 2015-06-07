@@ -237,6 +237,12 @@ static void rt2x00usb_work_txdone_entry(struct queue_entry *entry)
 		rt2x00lib_txdone_noinfo(entry, TXDONE_UNKNOWN);
 }
 
+static void rt2x00usb_work_txdonefn(struct work_struct *work)
+{
+	struct rt2x00_dev *peer = container_of(work, struct rt2x00_dev, txdone_work);
+	peer->txdone_workfn(work);
+}
+
 static void rt2x00usb_work_txdone(struct work_struct *work)
 {
 	struct rt2x00_dev *rt2x00dev =
@@ -810,7 +816,8 @@ int rt2x00usb_probe(struct usb_interface *usb_intf,
 	rt2x00_set_chip_intf(rt2x00dev, RT2X00_CHIP_INTF_USB);
 
 	INIT_WORK(&rt2x00dev->rxdone_work, rt2x00usb_work_rxdone);
-	INIT_WORK(&rt2x00dev->txdone_work, rt2x00usb_work_txdone);
+	INIT_WORK(&rt2x00dev->txdone_work, rt2x00usb_work_txdonefn);
+	rt2x00dev->txdone_workfn = rt2x00usb_work_txdone;
 	hrtimer_init(&rt2x00dev->txstatus_timer, CLOCK_MONOTONIC,
 		     HRTIMER_MODE_REL);
 
