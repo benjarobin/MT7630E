@@ -167,7 +167,7 @@ static RTMP_REG_PAIR MT76x0_BBP_Init_Tab[] = {
 	{RXO_R24, 0x00000006},
 	{RXO_R28, 0x0000003F},
 };
-static unsigned char MT76x0_BBP_Init_Tab_Size = (sizeof(MT76x0_BBP_Init_Tab) / sizeof(RTMP_REG_PAIR));
+static const unsigned int MT76x0_BBP_Init_Tab_Size = (sizeof(MT76x0_BBP_Init_Tab) / sizeof(RTMP_REG_PAIR));
 
 MT76x0_BBP_Table MT76x0_BPP_SWITCH_Tab[] = {
 	
@@ -240,7 +240,7 @@ MT76x0_BBP_Table MT76x0_BPP_SWITCH_Tab[] = {
 	{RF_G_BAND | RF_BW_20 | RF_BW_40,	{AGC1_R58, 0x00001010}},
 	{RF_A_BAND | RF_BW_20 | RF_BW_40 | RF_BW_80,	{AGC1_R58, 0x00000000}},
 };
-unsigned char MT76x0_BPP_SWITCH_Tab_Size = (sizeof(MT76x0_BPP_SWITCH_Tab) / sizeof(MT76x0_BBP_Table));
+static const unsigned int MT76x0_BPP_SWITCH_Tab_Size = (sizeof(MT76x0_BPP_SWITCH_Tab) / sizeof(MT76x0_BBP_Table));
 
 static RTMP_REG_PAIR MT76x0_DCOC_Tab[] = {
 	{CAL_R47, 0x000010F0},
@@ -254,7 +254,7 @@ static RTMP_REG_PAIR MT76x0_DCOC_Tab[] = {
 	//{CAL_R54, 0x00008080},
 	{CAL_R55, 0x00005050},
 };
-static unsigned char MT76x0_DCOC_Tab_Size = (sizeof(MT76x0_DCOC_Tab) / sizeof(RTMP_REG_PAIR));
+static const unsigned int MT76x0_DCOC_Tab_Size = (sizeof(MT76x0_DCOC_Tab) / sizeof(RTMP_REG_PAIR));
 
 typedef struct _BANK_RF_REG_PAIR {
 	unsigned char Bank;
@@ -382,7 +382,7 @@ static BANK_RF_REG_PAIR MT76x0_RF_Central_RegTb[] = {
 	{RF_BANK0,	RF_R72, 0xD0},
 	{RF_BANK0,	RF_R73, 0x93},
 };
-static unsigned int MT76x0_RF_Central_RegTb_Size = (sizeof(MT76x0_RF_Central_RegTb) / sizeof(BANK_RF_REG_PAIR));
+static const unsigned int MT76x0_RF_Central_RegTb_Size = (sizeof(MT76x0_RF_Central_RegTb) / sizeof(BANK_RF_REG_PAIR));
 
 static BANK_RF_REG_PAIR MT76x0_RF_2G_Channel_0_RegTb[] = {
 /*
@@ -485,7 +485,7 @@ static BANK_RF_REG_PAIR MT76x0_RF_2G_Channel_0_RegTb[] = {
 	{RF_BANK5,	RF_R69, 0xF0},
 	{RF_BANK5,	RF_R127, 0x04},
 };
-static unsigned int MT76x0_RF_2G_Channel_0_RegTb_Size = (sizeof(MT76x0_RF_2G_Channel_0_RegTb) / sizeof(BANK_RF_REG_PAIR));
+static const unsigned int MT76x0_RF_2G_Channel_0_RegTb_Size = (sizeof(MT76x0_RF_2G_Channel_0_RegTb) / sizeof(BANK_RF_REG_PAIR));
 
 static BANK_RF_REG_PAIR MT76x0_RF_5G_Channel_0_RegTb[] = {
 /*
@@ -561,7 +561,7 @@ static BANK_RF_REG_PAIR MT76x0_RF_5G_Channel_0_RegTb[] = {
 	{RF_BANK6,	RF_R64, 0xF1},
 	{RF_BANK6,	RF_R65, 0x0F},
 };
-static unsigned int MT76x0_RF_5G_Channel_0_RegTb_Size = (sizeof(MT76x0_RF_5G_Channel_0_RegTb) / sizeof(BANK_RF_REG_PAIR));
+static const unsigned int MT76x0_RF_5G_Channel_0_RegTb_Size = (sizeof(MT76x0_RF_5G_Channel_0_RegTb) / sizeof(BANK_RF_REG_PAIR));
 
 static BANK_RF_REG_PAIR MT76x0_RF_VGA_Channel_0_RegTb[] = {
 /*
@@ -614,7 +614,7 @@ static BANK_RF_REG_PAIR MT76x0_RF_VGA_Channel_0_RegTb[] = {
 	{RF_BANK7,	RF_R73, 0x34},
 	{RF_BANK7,	RF_R74, 0x00},
 };
-static unsigned int MT76x0_RF_VGA_Channel_0_RegTb_Size = (sizeof(MT76x0_RF_VGA_Channel_0_RegTb) / sizeof(BANK_RF_REG_PAIR));
+static const unsigned int MT76x0_RF_VGA_Channel_0_RegTb_Size = (sizeof(MT76x0_RF_VGA_Channel_0_RegTb) / sizeof(BANK_RF_REG_PAIR));
 
 static const MT76x0_RF_SWITCH_ITEM MT76x0_RF_BW_Switch[] =
 {
@@ -673,7 +673,7 @@ static const MT76x0_RF_SWITCH_ITEM MT76x0_RF_BW_Switch[] =
 		{RF_BANK7,	RF_R77,		BW_40,	0x40},
 		{RF_BANK7,	RF_R77,		BW_80,	0x10},
 };
-unsigned char MT76x0_RF_BW_Switch_Size = (sizeof(MT76x0_RF_BW_Switch) / sizeof(MT76x0_RF_SWITCH_ITEM));
+static const unsigned int MT76x0_RF_BW_Switch_Size = (sizeof(MT76x0_RF_BW_Switch) / sizeof(MT76x0_RF_SWITCH_ITEM));
 
 static const MT76x0_RF_SWITCH_ITEM MT76x0_RF_Band_Switch[] =
 {
@@ -733,7 +733,7 @@ static const MT76x0_RF_SWITCH_ITEM MT76x0_RF_Band_Switch[] =
 		{RF_BANK7,	RF_R79,		RF_G_BAND,		0x00},
 		{RF_BANK7,	RF_R79,		RF_A_BAND,		0x55},
 };
-unsigned int MT76x0_RF_Band_Switch_Size = (sizeof(MT76x0_RF_Band_Switch) / sizeof(MT76x0_RF_SWITCH_ITEM));
+static const unsigned int MT76x0_RF_Band_Switch_Size = (sizeof(MT76x0_RF_Band_Switch) / sizeof(MT76x0_RF_SWITCH_ITEM));
 
 
 static const MT76x0_FREQ_ITEM MT76x0_Frequency_Plan[] =
@@ -868,7 +868,7 @@ static const MT76x0_FREQ_ITEM MT76x0_Frequency_Plan[] =
 	{172, 	(RF_A_BAND | RF_A_BAND_HB),	 0x02, 0x3F, 0x30, 0x97, 0xD2, 0x40, 0x04, 0x40, 0x0A, 0, 0, 1, 0x30, 0, 0x30, 0, 0, 0x3}, /* Freq 5860 */
 	{173, 	(RF_A_BAND | RF_A_BAND_HB),	 0x02, 0x3F, 0x68, 0xDD, 0xD2, 0x40, 0x10, 0x40, 0x15, 0, 0, 1, 0x30, 0, 0x30, 0, 0, 0x3}, /* Freq 5865 */
 };
-unsigned char NUM_OF_MT76x0_CHNL = (sizeof(MT76x0_Frequency_Plan) / sizeof(MT76x0_FREQ_ITEM));
+static const unsigned int NUM_OF_MT76x0_CHNL = (sizeof(MT76x0_Frequency_Plan) / sizeof(MT76x0_FREQ_ITEM));
 
 
 static MT76x0_RF_SWITCH_ITEM MT76x0_RF_INT_PA_RegTb[] = {
@@ -918,8 +918,11 @@ static MT76x0_RF_SWITCH_ITEM MT76x0_RF_INT_PA_RegTb[] = {
 	{RF_BANK6,	RF_R59,		RF_A_BAND_HB,	0x02},
 #endif
 };
-unsigned int MT76x0_RF_INT_PA_RegTb_Size = (sizeof(MT76x0_RF_INT_PA_RegTb) / sizeof(MT76x0_RF_SWITCH_ITEM));
-
+#if 0
+static const unsigned int MT76x0_RF_INT_PA_RegTb_Size = (sizeof(MT76x0_RF_INT_PA_RegTb) / sizeof(MT76x0_RF_SWITCH_ITEM));
+#else
+static const unsigned int MT76x0_RF_INT_PA_RegTb_Size = 0;
+#endif
 
 
 /*
@@ -1278,13 +1281,7 @@ static void rt2800_MT7630_rfcsr_write(struct rt2x00_dev *rt2x00dev,
 {
 	RLT_RF_CSR_CFG rfcsr = { { 0 } };
 	unsigned int i = 1;
-	int	 ret;
 
-
-
-	//ASSERT((word <= 127));
-
-	ret = 0;
 	do
 	{
 		rt2800_register_read(rt2x00dev, RF_CSR_CFG, &rfcsr.word);
@@ -1298,7 +1295,7 @@ static void rt2800_MT7630_rfcsr_write(struct rt2x00_dev *rt2x00dev,
 	if ((i == 100))
 	{
 		printk("rt2800_MT7630_rfcsr_write Retry count exhausted or device removed!!!\n");
-		goto done;
+		return;
 	}
 
 	rfcsr.field.RF_CSR_WR = 1;
@@ -1308,11 +1305,6 @@ static void rt2800_MT7630_rfcsr_write(struct rt2x00_dev *rt2x00dev,
 
 	rfcsr.field.RF_CSR_DATA = value;
 	rt2800_register_write(rt2x00dev, RF_CSR_CFG, rfcsr.word);
-	//printk("rlt_rf_write bank=0x%x ID=0x%x value=0x%x\n",bank, word, value);
-	ret = 0;
-
-done:
-	return ret;
 }
 
 
@@ -1321,11 +1313,6 @@ static void rt2800_MT7630_rfcsr_read(struct rt2x00_dev *rt2x00dev,
 {
 	RLT_RF_CSR_CFG rfcsr = { { 0 } };
 	unsigned int i=0, k=0;
-	int	 ret = 1;
-
-
-
-	//ASSERT((word <= 127));
 
 	for (i=0; i<100; i++)
 	{
@@ -1362,12 +1349,7 @@ static void rt2800_MT7630_rfcsr_read(struct rt2x00_dev *rt2x00dev,
 	if (rfcsr.field.RF_CSR_KICK == 1)
 	{																	
 		printk("RF read R%d=0x%X fail, i[%d], k[%d]\n", word, rfcsr.word,i,k);
-		goto done;
 	}
-	ret = 0;
-
-done:
-	return ret;
 }
 
 static int rt2800_enable_wlan_mt7630(struct rt2x00_dev *rt2x00dev)
@@ -1803,7 +1785,7 @@ void rt2800_write_tx_data(struct queue_entry *entry,
 	/*
 	 * Initialize TX Info descriptor
 	 */
-	 pTxWI = txwi;
+	 pTxWI = (TXWI_STRUC *)txwi;
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
 		memset(pTxWI,0, 20);
@@ -1941,7 +1923,7 @@ void rt2800_process_rxwi(struct queue_entry *entry,
 	
 	__le32 *rxwi = (__le32 *) entry->skb->data;
 	u32 word;
-	pRxWI =entry->skb->data;
+	pRxWI = (RXWI_STRUC *)entry->skb->data;
 	queue = entry->queue;
 	rt2x00dev = queue->rt2x00dev;
 	
@@ -2082,7 +2064,7 @@ void rt2800_txdone_entry(struct queue_entry *entry, u32 status, __le32 *txwi)
 	rt2x00_desc_read(txwi, 0, &word);
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
-		pTxWI = txwi;
+		pTxWI = (TXWI_STRUC *)txwi;
 		mcs= pTxWI->TxWIMCS;
 		ampdu=pTxWI->TxWIAMPDU;
 
@@ -4101,11 +4083,9 @@ static void rt2800_config_channel_rf7630(struct rt2x00_dev *rt2x00dev,
 	u32 RegValue = 0;
 	u32 Index;
 	u32 Value = 0, rf_phy_mode, rf_bw = RF_BW_20;
-	unsigned char bbp_ch_idx;
 	unsigned char RfValue = 0;
 	u32 IdReg = 0, MacReg = 0, i = 0, RfBand = 0;
-	u16 eeprom;
-	MT76x0_FREQ_ITEM *pMT76x0_freq_item = NULL;
+	const MT76x0_FREQ_ITEM *pMT76x0_freq_item = NULL;
 	unsigned char BBPCurrentBW;
 	printk("==>rt2800_config_channel_rf7630 ch%d\n",rf->channel);
 	//return;
@@ -5083,17 +5063,9 @@ void rt2800_vco_calibration(struct rt2x00_dev *rt2x00dev)
 	u32	tx_pin;
 	u8	rfcsr;
 
-	//printk("===>%s:MT7630\n", __FUNCTION__);
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
 		return;
-		u32 reg;
-		reg=0;
-		rt2800_register_read(rt2x00dev, 0x0208, &reg);
-		printk(" rt2800_vco_calibration 0x0208 = 0x%x\n",reg);
-
-		//MT76x0_VCO_CalibrationMode3(rt2x00dev);
-		
 	}
 	/*
 	 * A voltage-controlled oscillator(VCO) is an electronic oscillator
@@ -5308,7 +5280,6 @@ void rt2800_link_tuner(struct rt2x00_dev *rt2x00dev, struct link_qual *qual,
 		       const u32 count)
 {
 	u8 vgc;
-	unsigned int i;
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
 		NICUpdateRawCounters(rt2x00dev);		
@@ -6619,7 +6590,7 @@ static u8 rt2800_init_rx_filter(struct rt2x00_dev *rt2x00dev, bool bw40,
 static void rt2800_rf_init_calibration(struct rt2x00_dev *rt2x00dev,
 				       const unsigned int rf_reg)
 {
-	u8 rfcsr;
+	u8 rfcsr = 0;
 
 	rt2800_rfcsr_read(rt2x00dev, rf_reg, &rfcsr);
 	rt2x00_set_field8(&rfcsr, FIELD8(0x80), 1);
@@ -6680,6 +6651,8 @@ static void rt2800_normal_mode_setup_3xxx(struct rt2x00_dev *rt2x00dev)
 	struct rt2800_drv_data *drv_data = rt2x00dev->drv_data;
 	u8 min_gain, rfcsr, bbp;
 	u16 eeprom;
+	
+	rfcsr = 0;
 
 	rt2800_rfcsr_read(rt2x00dev, 17, &rfcsr);
 
@@ -7334,15 +7307,13 @@ static void rt2800_init_rfcsr(struct rt2x00_dev *rt2x00dev)
 {
 	u32 IdReg;
 	u8 RFValue;
+	unsigned char BBPCurrentBW = BW_20;
 	
 	if (rt2800_is_305x_soc(rt2x00dev)) {
 		rt2800_init_rfcsr_305x_soc(rt2x00dev);
 		return;
 	}
-
-
-
-
+	
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
 		printk("%s(): Init RF Registers MT7630\n", __FUNCTION__);
@@ -7378,7 +7349,6 @@ static void rt2800_init_rfcsr(struct rt2x00_dev *rt2x00dev)
 						MT76x0_RF_VGA_Channel_0_RegTb[IdReg].Bank);
 		}
 
-		unsigned char BBPCurrentBW = BW_20;
 		for(IdReg = 0; IdReg < MT76x0_RF_BW_Switch_Size; IdReg++)
 		{
 			if (BBPCurrentBW == MT76x0_RF_BW_Switch[IdReg].BwBand)
@@ -7429,7 +7399,7 @@ static void rt2800_init_rfcsr(struct rt2x00_dev *rt2x00dev)
 		RFValue = ((RFValue & ~0x80) | 0x80); 
 		rt2800_MT7630_rfcsr_write(rt2x00dev, RF_R04, RFValue, RF_BANK0);
 		printk("%s(): Init RF Registers MT7630 complete\n", __FUNCTION__);
-		return 0;
+		return;
 	}
 	
 	switch (rt2x00dev->chip.rt) {
@@ -7484,7 +7454,7 @@ static int rt2800lib_init_queues(struct rt2x00_dev *rt2x00dev)
 			rt2800_register_write(rt2x00dev, TX_RING_BASE + offset, entry_priv->desc_dma);
 			rt2800_register_write(rt2x00dev, TX_RING_CNT + offset, rt2x00dev->tx[i].limit);
 			rt2800_register_write(rt2x00dev, TX_RING_CIDX + offset, 0);
-			printk("-->TX_RING: Base=0x%x, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->tx[i].limit);
+			printk("-->TX_RING: Base=0x%llx, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->tx[i].limit);
 		}
 
 		offset = 4 * 0x10;
@@ -7503,7 +7473,7 @@ static int rt2800lib_init_queues(struct rt2x00_dev *rt2x00dev)
 		rt2800_register_write(rt2x00dev, RX_RING_CIDX, rt2x00dev->rx[0].limit - 1);
 		rt2800_register_write(rt2x00dev, RX_RING_CIDX + 0x10, rt2x00dev->rx[0].limit - 1);
 
-		printk("-->RX_RING: Base=0x%x, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->rx[0].limit);
+		printk("-->RX_RING: Base=0x%llx, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->rx[0].limit);
 		//printk("InitTxRxRing\n");
 
 		AsicInitTxRxRing(rt2x00dev);
@@ -7739,8 +7709,6 @@ int rt2800_enable_radio(struct rt2x00_dev *rt2x00dev)
 	u32 reg;
 	u16 word;
 	u8 *mac;
-	MAC_DW0_STRUC csr2;
-	MAC_DW1_STRUC csr3;
 	/*
 	 * Initialize all registers.
 	 */
@@ -9118,7 +9086,7 @@ EXPORT_SYMBOL_GPL(rt2800_get_survey);
 
 void mt7630_show_rf(struct rt2x00_dev *rt2x00dev)
 {
-		unsigned char regRF = 0, rf_bank = 0;
+		unsigned char regRF = 0;
 		int	rfId, maxRFIdx, bank_Id;
 		maxRFIdx = 127;
 		for (bank_Id = 0; bank_Id <= 4; bank_Id++)

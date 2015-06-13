@@ -52,25 +52,6 @@ void MT_2800pci_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen);
 extern int AsicWaitPDMAIdle(struct rt2x00_dev *rt2x00dev, int round, int wait_us);
 extern void RTMPEnableRxTx(struct rt2x00_dev *rt2x00dev);
 
-static void rt2860_int_disable(struct rt2x00_dev *rt2x00dev, unsigned int mode)
-{
-	u32 regValue;
-
-	rt2x00dev->int_disable_mask |= mode;
-	regValue = 	rt2x00dev->int_enable_reg & ~(rt2x00dev->int_disable_mask);
-	rt2x00mmio_register_write(rt2x00dev, INT_MASK_CSR, regValue);     /* 0: disable */
-}
-
-static void rt2860_int_enable(struct rt2x00_dev *rt2x00dev, unsigned int mode)
-{
-	u32 regValue;
-
-	rt2x00dev->int_disable_mask &= ~(mode);
-	regValue = rt2x00dev->int_enable_reg & ~(rt2x00dev->int_disable_mask);		
-	rt2x00mmio_register_write(rt2x00dev, INT_MASK_CSR, regValue);     /* 1:enable */
-
-}
-
 /*
  * Allow hardware encryption to be disabled.
  */
@@ -591,7 +572,7 @@ static int rt2800pci_init_queues(struct rt2x00_dev *rt2x00dev)
 			rt2x00mmio_register_write(rt2x00dev, TX_RING_BASE + offset, entry_priv->desc_dma);
 			rt2x00mmio_register_write(rt2x00dev, TX_RING_CNT + offset, rt2x00dev->tx[i].limit);
 			rt2x00mmio_register_write(rt2x00dev, TX_RING_CIDX + offset, 0);
-			printk("-->TX_RING: Base=0x%x, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->tx[i].limit);
+			printk("-->TX_RING: Base=0x%llx, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->tx[i].limit);
 		}
 
 		offset = 4 * 0x10;
@@ -611,7 +592,7 @@ static int rt2800pci_init_queues(struct rt2x00_dev *rt2x00dev)
 
 		rt2x00mmio_register_write(rt2x00dev, RX_RING_CIDX + 0x10, rt2x00dev->rx[0].limit - 1);
 
-		printk("-->RX_RING: Base=0x%x, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->rx[0].limit);
+		printk("-->RX_RING: Base=0x%llx, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->rx[0].limit);
 
 
 		
@@ -926,7 +907,7 @@ static void rt2800pci_write_tx_desc(struct queue_entry *entry,
 	TXINFO_STRUC *pTxInfo;
 	//printk("==>rt2800pci_write_tx_desc\n");
 
-	pTxD = entry_priv->desc;
+	pTxD = (TXD_STRUC *)entry_priv->desc;
 	pTxInfo = (TXINFO_STRUC *)(entry_priv->desc + sizeof(TXD_STRUC));
 	memset(pTxD, 0, 16);
 	/*
@@ -942,6 +923,8 @@ static void rt2800pci_write_tx_desc(struct queue_entry *entry,
 	 */
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
+		struct _TXINFO_NMAC_PKT *nmac_info;
+		
 		pTxD->SDPtr0 = skbdesc->skb_dma;
 		pTxD->SDLen0 = TXWI_DESC_SIZE_7630;	/* include padding*/
 		pTxD->SDPtr1 = skbdesc->skb_dma + TXWI_DESC_SIZE_7630;
@@ -950,7 +933,6 @@ static void rt2800pci_write_tx_desc(struct queue_entry *entry,
 		pTxD->LastSec1 =  !test_bit(ENTRY_TXD_MORE_FRAG, &txdesc->flags);
 		//pTxD->DMADONE= 0;
 		pTxD->Burst= test_bit(ENTRY_TXD_BURST, &txdesc->flags);
-		struct _TXINFO_NMAC_PKT *nmac_info;
 		nmac_info = (struct _TXINFO_NMAC_PKT *)pTxInfo;
 		nmac_info->pkt_80211 = 1;
 		nmac_info->info_type = 0;
@@ -1031,16 +1013,16 @@ static void rt2800pci_fill_rxdone(struct queue_entry *entry,
 	{
 			//MT_2800pci_hex_dump("rxd", rxd, 16);
 			unsigned char hw_rx_info[16];
-			unsigned char hw_fce[4];
-			__le32 *destrxd = NULL;
+			//unsigned char hw_fce[4];
+			//__le32 *destrxd = NULL;
 
 			//memcpy(&hw_rx_info[0], rxd,12);
 			memcpy(&hw_rx_info[0], rxd,16);
 			//memcpy(&hw_fce[0], rxd+12,4);
-			pRxFceInfo = &hw_rx_info[12];
+			pRxFceInfo = (RXFCE_INFO *)&hw_rx_info[12];
 			//destrxd = (__le32 *) entry->skb->data; 	//woody
 			//memcpy(&hw_rx_info[12], destrxd,4);
-			pRxInfo = entry->skb->data;
+			pRxInfo = (RXINFO_STRUC *)entry->skb->data;
 
 			
 			//rxd = &hw_rx_info[0];
@@ -1247,31 +1229,6 @@ static bool rt2800pci_txdone_release_entries(struct queue_entry *entry,
 	return true;
 }
 
- #define woody_kfifo_get(fifo, val) \
- ({ \
-         typeof((fifo) + 1) __tmp = (fifo); \
-         typeof(__tmp->ptr) __val = (val); \
-         unsigned int __ret; \
-         size_t __recsize = sizeof(*__tmp->rectype); \
-        struct __kfifo *__kfifo = &__tmp->kfifo; \
-	{ \
-                 __ret = !kfifo_is_empty(__tmp); \
-                 if ((__is_kfifo_ptr(__tmp)))	\
-				 	printk("__is_kfifo_ptr(1)\n");	\
-                 if (__ret) { \
-             			 printk("((typeof(__tmp->type))__kfifo->data)[%d]=0x%x\n",__kfifo->out & __tmp->kfifo.mask, ((typeof(__tmp->type))__kfifo->data)[__kfifo->out & __tmp->kfifo.mask]);	\				 	
-				*(typeof(__tmp->type))__val = \	 	
-                         (__is_kfifo_ptr(__tmp) ? \
-                                ((typeof(__tmp->type))__kfifo->data) : \
-                                (__tmp->buf) \
-                                )[__kfifo->out & __tmp->kfifo.mask]; \
-                         smp_wmb(); \
-                         __kfifo->out++; \
-                } \	
-              } \    
-              __ret; \
- 	})
- 	
 static bool rt2800pci_txdone(struct rt2x00_dev *rt2x00dev)
 {
 	struct data_queue *queue;
@@ -1384,10 +1341,6 @@ static void rt2800pci_txstatus_tasklet(unsigned long data)
 static void rt2800pci_tx8damdone_tasklet(unsigned long data)
 {
 	struct rt2x00_dev *rt2x00dev = (struct rt2x00_dev *)data;
-	unsigned long flags;
-	INT_SOURCE_CSR_STRUC IntSource;
-	BOOLEAN bReschedule = 0;
-
 
 	if (RTMPHandleTxRing8DmaDoneInterrupt(rt2x00dev))
 		tasklet_schedule(&rt2x00dev->tx8damdone_tasklet);
@@ -1473,34 +1426,6 @@ static void rt2800pci_autowake_tasklet(unsigned long data)
 	}
 }
 
-
- #define woody_kfifo_put(fifo, val) \
- ({ \
-         typeof((fifo) + 1) __tmp = (fifo); \
-         typeof(*__tmp->const_type) __val = (val); \
-         unsigned int __ret; \
-         size_t __recsize = sizeof(*__tmp->rectype); \
-        struct __kfifo *__kfifo = &__tmp->kfifo; \
-		printk("__recsize =%d\n",__recsize);	\
-	{ \
-                 __ret = !kfifo_is_full(__tmp); \
-                 printk("__ret =%d\n",__ret);	\
-                 if ((__is_kfifo_ptr(__tmp)))	\
-				 	printk("__is_kfifo_ptr\n");	\
-			printk("value=0x%x, (typeof(*__tmp->type))__val = 0x%x\n", val, (typeof(*__tmp->type))__val);	\		 	
-                 if (__ret) { \
-                         (__is_kfifo_ptr(__tmp) ? \
-                         ((typeof(__tmp->type))__kfifo->data) : \
-                         (__tmp->buf) \
-                         )[__kfifo->in & __tmp->kfifo.mask] = \
-                                 (typeof(*__tmp->type))__val; \
-                         smp_wmb(); \
-printk("((typeof(__tmp->type))__kfifo->data)[%d]=0x%x\n",__kfifo->in & __tmp->kfifo.mask, ((typeof(__tmp->type))__kfifo->data)[__kfifo->in & __tmp->kfifo.mask]);	\				 	                 
-                         __kfifo->in++; \
-                } \	
-              } \    
-              __ret; \
- 	})
 static void rt2800pci_txstatus_interrupt(struct rt2x00_dev *rt2x00dev)
 {
 	u32 status;
@@ -1540,7 +1465,6 @@ static void rt2800pci_txstatus_interrupt(struct rt2x00_dev *rt2x00dev)
 		printk("0x%x (status)\n",Fifi_Status.word);
 		status = Fifi_Status.word;
 
-		//woody_kfifo_put(&rt2x00dev->txstatus_fifo, &status);
 		if (!kfifo_put(&rt2x00dev->txstatus_fifo, status)) {
 			WARNING(rt2x00dev, "TX status FIFO overrun,"
 				"drop tx status report.\n");
