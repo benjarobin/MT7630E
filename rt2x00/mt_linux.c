@@ -179,8 +179,8 @@ INT PCIKickOutCmd(
 
 	if (FreeNum == 0)
 	{
-		printk("%s FreeNum == 0 (TxCpuIdx = %d, TxDmaIdx = %d, TxSwFreeIdx = %d)\n", 
-			__FUNCTION__, rt2x00dev->CtrlRing.TxCpuIdx, rt2x00dev->CtrlRing.TxDmaIdx, rt2x00dev->CtrlRing.TxSwFreeIdx);
+		DEBUG(rt2x00dev, "FreeNum == 0 (TxCpuIdx = %d, TxDmaIdx = %d, TxSwFreeIdx = %d)\n", 
+			rt2x00dev->CtrlRing.TxCpuIdx, rt2x00dev->CtrlRing.TxDmaIdx, rt2x00dev->CtrlRing.TxSwFreeIdx);
 		return NDIS_STATUS_FAILURE;
 	}
 
@@ -192,7 +192,7 @@ INT PCIKickOutCmd(
 	hex_dump("pPacket->data", GET_OS_PKT_DATAPTR(pPacket), Len-TXINFO_SIZE);
 	if (Status != NDIS_STATUS_SUCCESS)
 	{
-		printk("PCIKickOutCmd (error:: can't allocate NDIS PACKET)\n");
+		DEBUG(rt2x00dev, "PCIKickOutCmd (error:: can't allocate NDIS PACKET)\n");
 		return NDIS_STATUS_FAILURE;
 	}
 
@@ -229,7 +229,7 @@ INT PCIKickOutCmd(
 
 	RTMP_IO_WRITE32(rt2x00dev, TX_CTRL_CIDX,  rt2x00dev->CtrlRing.TxCpuIdx);
 	RTMP_IRQ_UNLOCK(&rt2x00dev->CtrlRingLock, IrqFlags);
-	printk("PCIKickOutCmd (TxCpuIdx = %d)\n",rt2x00dev->CtrlRing.TxCpuIdx);
+	DEBUG(rt2x00dev, "PCIKickOutCmd (TxCpuIdx = %d)\n",rt2x00dev->CtrlRing.TxCpuIdx);
 	return Status;
 }
 
@@ -247,7 +247,7 @@ INT AsicSendCmdToAndes(struct rt2x00_dev *rt2x00dev, struct CMD_UNIT *CmdUnit)
 	//return Ret;
 	if (!MCtrl->IsFWReady)
 	{
-		printk("22222\n");
+		DEBUG(rt2x00dev, "22222\n");
 		return NDIS_STATUS_FAILURE;
 	}
 
@@ -274,7 +274,7 @@ INT AsicSendCmdToAndes(struct rt2x00_dev *rt2x00dev, struct CMD_UNIT *CmdUnit)
 
 		if (!CmdRspEvent)
 		{
-			printk("%s Not available memory\n", __FUNCTION__);
+			WARNING(rt2x00dev, "Not available memory\n");
 			Ret = NDIS_STATUS_RESOURCES;
 			goto error;
 		}
@@ -299,7 +299,7 @@ INT AsicSendCmdToAndes(struct rt2x00_dev *rt2x00dev, struct CMD_UNIT *CmdUnit)
 	else
 	{	
 		TxInfoCmd->cmd_seq = 0;
-		printk("AsicSendCmdToAndes not need  Rsp!!!\n");
+		DEBUG(rt2x00dev, "AsicSendCmdToAndes not need  Rsp!!!\n");
 	}
 
 	TxInfoCmd->pkt_len = CmdUnit->u.ANDES.CmdPayloadLen;
@@ -356,7 +356,7 @@ static INT desc_ring_alloc(struct rt2x00_dev *rt2x00dev, RTMP_DMABUF *pDescRing,
 
 	if (pDescRing->AllocVa == NULL)
 	{
-		printk("Failed to allocate a big buffer\n");
+		WARNING(rt2x00dev, "Failed to allocate a big buffer\n");
 		return 0x00000402L;
 	}
 
@@ -372,7 +372,7 @@ NDIS_STATUS	RTMPAllocTxRxRingMemory(struct rt2x00_dev *rt2x00dev)
 {
 	NDIS_STATUS Status = NDIS_STATUS_SUCCESS;
 	
-	printk("-->RTMPAllocTxRxRingMemory\n");
+	DEBUG(rt2x00dev, "-->RTMPAllocTxRxRingMemory\n");
 	do
 	{
 		/* Alloc CTRL ring desc buffer except Tx ring allocated eariler */
@@ -382,12 +382,12 @@ NDIS_STATUS	RTMPAllocTxRxRingMemory(struct rt2x00_dev *rt2x00dev)
 			Status = NDIS_STATUS_RESOURCES;
 			break;
 		}
-		printk("CTRL Ring: total %d bytes allocated\n",
+		INFO(rt2x00dev, "CTRL Ring: total %d bytes allocated\n",
 					(INT)rt2x00dev->CtrlDescRing.AllocSize);
 	}while (FALSE);
 
 
-	printk("<-- RTMPAllocTxRxRingMemory, Status=%x\n", Status);
+	DEBUG(rt2x00dev, "<-- RTMPAllocTxRxRingMemory, Status=%x\n", Status);
 	return Status;
 }
 EXPORT_SYMBOL_GPL(RTMPAllocTxRxRingMemory);
@@ -480,15 +480,14 @@ VOID AsicInitTxRxRing(struct rt2x00_dev *rt2x00dev)
 
 
 	/* init CTRL ring index pointer */
-	printk("AsicInitTxRxRing\n");
+	DEBUG(rt2x00dev, "AsicInitTxRxRing\n");
 	addr = RTMP_GetPhysicalAddressLow(rt2x00dev->CtrlRing.Cell[0].AllocPa);
 	RTMP_IO_WRITE32(rt2x00dev, TX_CTRL_BASE, addr);
 	RTMP_IO_WRITE32(rt2x00dev, TX_CTRL_CNT, MGMT_RING_SIZE);
 	rt2x00dev->CtrlRing.TxSwFreeIdx = 0;
 	rt2x00dev->CtrlRing.TxCpuIdx = 0;
 	RTMP_IO_WRITE32(rt2x00dev, TX_CTRL_CIDX,  rt2x00dev->CtrlRing.TxCpuIdx);
-	printk("-->TX_RING_CTRL: Base=0x%x, Cnt=%d!\n",
-					addr, MGMT_RING_SIZE);
+	DEBUG(rt2x00dev, "-->TX_RING_CTRL: Base=0x%x, Cnt=%d!\n", addr, MGMT_RING_SIZE);
 
 }
 EXPORT_SYMBOL_GPL(AsicInitTxRxRing);
@@ -565,14 +564,13 @@ VOID SendAndesTFSWITCH(
 	INT ret;
 	struct CMD_UNIT CmdUnit;
 	
-	printk("%s: -->\n", __FUNCTION__);
+	DEBUG(rt2x00dev, "-->\n");
 	coexTF.CoexOperation = TypeTFSwitch;
        coexTF.CoexMode = CoexMode;
        
 	coexTFLength = sizeof(coexTF);
 
-	printk("%s: CoexOperation = %d, CoexMode = %d\n, PktLength = %d\n", 
-		__FUNCTION__, 
+	DEBUG(rt2x00dev, "CoexOperation = %d, CoexMode = %d\n, PktLength = %d\n", 
 		coexTF.CoexOperation, 
 		coexTF.CoexMode,
 		coexTFLength
@@ -593,7 +591,7 @@ VOID SendAndesTFSWITCH(
 		&coexTF, coexTFLength, 0);
 #endif
 	TDDFDDExclusiveRequest(rt2x00dev, CoexMode);
-	printk("%s: <--\n", __FUNCTION__);
+	DEBUG(rt2x00dev, "<--\n");
        
 	
 }
@@ -682,7 +680,7 @@ VOID PrepareProtectionFrame(
 	TXWI_STRUC *pTxWI;
 
 
-	printk("==>PrepareProtectionFrame\n");	
+	DEBUG(rt2x00dev, "==>PrepareProtectionFrame\n");	
 
 
 	NdisZeroMemory(&TxWI,rt2x00dev->TXWISize);
@@ -775,7 +773,7 @@ VOID PrepareProtectionFrame(
 		//Beacon address from D000
             FrameAddress = 0xD000 + (0x200*(Number-2));
       }
-      printk("Protection FrameAddress =%lx \n",FrameAddress);
+      DEBUG(rt2x00dev, "Protection FrameAddress =%lx \n",FrameAddress);
 	//
 	// Move TXWI and frame content to on-chip memory
 	//
@@ -842,28 +840,28 @@ VOID EstablishFrameBundle(
     
     UCHAR n0, n1, n2, n3 = 0;
     n0 = CheckAvailableNullFrameSpace(rt2x00dev);
-	printk("COEX: Protection FrameBaseNumber=%d\n",n0);
+	DEBUG(rt2x00dev, "COEX: Protection FrameBaseNumber=%d\n",n0);
 	if (n0 != NULLFRAMESPACE)
 	{
         PrepareProtectionFrame(rt2x00dev, CTSTOSELF, n0, 2500, OPMode,WCID);
 	 FillProtectionFrameSpace(rt2x00dev, n0, PROTECTIONFRAMEREADY  , OPMode, pAddr, CTSTOSELF);
 	}
     n1 = CheckAvailableNullFrameSpace(rt2x00dev);
-	printk("COEX: Protection FrameBaseNumber=%d\n",n1);
+	DEBUG(rt2x00dev, "COEX: Protection FrameBaseNumber=%d\n",n1);
 	if (n1 != NULLFRAMESPACE)
 	{
         PrepareProtectionFrame(rt2x00dev, POWERSAVE1, n1, 0, OPMode,WCID);
         FillProtectionFrameSpace(rt2x00dev, n1, PROTECTIONFRAMEREADY  , OPMode, pAddr, POWERSAVE1);
 	}
     n2 = CheckAvailableNullFrameSpace(rt2x00dev);
-	printk("COEX: Protection FrameBaseNumber=%d\n",n2);
+	DEBUG(rt2x00dev, "COEX: Protection FrameBaseNumber=%d\n",n2);
 	if (n2 != NULLFRAMESPACE)
 	{
         PrepareProtectionFrame(rt2x00dev, CFEND, n2, 0, OPMode,WCID);
         FillProtectionFrameSpace(rt2x00dev, n2, PROTECTIONFRAMEREADY  , OPMode, pAddr, CFEND);
 	}
     n3 = CheckAvailableNullFrameSpace(rt2x00dev);
-	printk("COEX: Protection FrameBaseNumber=%d\n",n3);
+	DEBUG(rt2x00dev, "COEX: Protection FrameBaseNumber=%d\n",n3);
 	if (n3 != NULLFRAMESPACE)
 	{
         PrepareProtectionFrame(rt2x00dev, POWERSAVE0, n3, 0, OPMode,WCID);
@@ -1025,8 +1023,7 @@ VOID BtAFHCtl(
 		*/
 	}
 
-	printk("%s: COEX AFH Start Ch = %d, AFH End Ch = %d, Channel = %d, CentralChannel = %d\n",
-		__FUNCTION__, 
+	DEBUG(rt2x00dev, "COEX AFH Start Ch = %d, AFH End Ch = %d, Channel = %d, CentralChannel = %d\n",
 		btFunInfo.field.AFH_START_CH,
 		btFunInfo.field.AFH_END_CH,
 		Channel,
@@ -1047,7 +1044,7 @@ VOID SendAndesCoexFrameInfo(
 	COEX_PROTECTION_FRAME_INFO coexProtectionFrameInfo = {0};
 	USHORT coexProtectionFrameInfoLength = 0;
 
-	printk("%s: -->\n", __FUNCTION__);
+	DEBUG(rt2x00dev, "-->\n");
 
 	coexProtectionFrameInfo.CoexOperation = TypeProtectionFrame;
 	coexProtectionFrameInfo.Triggernumber = rt2x00dev->NullFrameSpace[TriggerNumber].Triggernumber;
@@ -1058,8 +1055,7 @@ VOID SendAndesCoexFrameInfo(
     
 	coexProtectionFrameInfoLength = sizeof(coexProtectionFrameInfo);
 
-	printk("%s: Triggernumber = %ld, Valid = %ld, NodeType = %ld, BssHashID = %ld, , FrameType = %ld, CmdParametersLength = %d\n", 
-		__FUNCTION__, 
+	DEBUG(rt2x00dev, "Triggernumber = %ld, Valid = %ld, NodeType = %ld, BssHashID = %ld, , FrameType = %ld, CmdParametersLength = %d\n", 
 		coexProtectionFrameInfo.Triggernumber, 
 		coexProtectionFrameInfo.Valid, 
 		coexProtectionFrameInfo.NodeType,
@@ -1083,7 +1079,7 @@ VOID SendAndesCoexFrameInfo(
 
 		ret = AsicSendCmdToAndes(rt2x00dev, &CmdUnit);
 
-	printk("%s: <--\n", __FUNCTION__);
+	DEBUG(rt2x00dev, "<--\n");
 	
 }
 EXPORT_SYMBOL_GPL(SendAndesCoexFrameInfo);
@@ -1096,7 +1092,7 @@ VOID UpdateAndesNullFrameSpace(
     {
         if (rt2x00dev->NullFrameSpace[iter].Occupied != 0 ) 
         {
-     	   	printk("Coex: Send protection frame %d\n",iter);		
+     	   	DEBUG(rt2x00dev, "Coex: Send protection frame %d\n",iter);		
            	SendAndesCoexFrameInfo(rt2x00dev, iter);
         }
         
@@ -1197,7 +1193,7 @@ VOID MT76x0_Calibration(
 {
 	UINT32 MacReg = 0, reg_val = 0, reg_tx_alc = 0;
 	
-	printk("%s - Channel = %d, bPowerOn = %d, bFullCal = %d\n", __FUNCTION__, Channel, bPowerOn, bFullCal);
+	DEBUG(rt2x00dev, "Channel = %d, bPowerOn = %d, bFullCal = %d\n", Channel, bPowerOn, bFullCal);
 
 //#ifdef RTMP_MAC_PCI
 	RTMP_SEM_LOCK(&rt2x00dev->CalLock);
@@ -1528,7 +1524,7 @@ static void MT7630_rfcsr_read(struct rt2x00_dev *rt2x00dev,
 
 	if (rfcsr.field.RF_CSR_KICK == 1)
 	{																	
-		printk("RF read R%d=0x%X fail, i[%d], k[%d]\n", word, rfcsr.word,i,k);
+		DEBUG(rt2x00dev, "RF read R%d=0x%X fail, i[%d], k[%d]\n", word, rfcsr.word,i,k);
 	}
 }
 
@@ -1550,7 +1546,7 @@ static void MT7630_rfcsr_write(struct rt2x00_dev *rt2x00dev,
 
 	if ((i == 100))
 	{
-		printk("rt2800_MT7630_rfcsr_write Retry count exhausted or device removed!!!\n");
+		WARNING(rt2x00dev, "rt2800_MT7630_rfcsr_write Retry count exhausted or device removed!!!\n");
 		return;
 	}
 
@@ -1572,7 +1568,7 @@ void MT76x0_VCO_CalibrationMode3(
 	Mode = (RFValue & 0xF0);	
 	if (Mode == 0x30)
 	{
-		printk("%s - Calibration Mode: Open loop, closed loop, and amplitude\n", __FUNCTION__);
+		DEBUG(rt2x00dev, "Calibration Mode: Open loop, closed loop, and amplitude\n");
 		/*
 			Calibration Mode - Open loop, closed loop, and amplitude:
 			B0.R06.[0]: 0
@@ -1858,15 +1854,14 @@ VOID SendAndesWLANStatus(
 		return;
 	}
 	
-	printk("%s: -->\n", __FUNCTION__);
+	DEBUG(rt2x00dev, "-->\n");
 	wlanStatus.CoexOperation = TypeWiFiStatus;
        wlanStatus.WLANStatus= WlanStatus;
        wlanStatus.PrivilegeTime= PrivilegeTime;
        wlanStatus.BssHashID = BssHashID;
 	wlanStatusLength = sizeof(wlanStatus);
 
-	printk("%s: CoexOperation = %d, WlanStatus = %X, PrivilegeTime = %d, BssHashID = %d, PktLength = %d\n", 
-		__FUNCTION__, 
+	DEBUG(rt2x00dev, "CoexOperation = %d, WlanStatus = %X, PrivilegeTime = %d, BssHashID = %d, PktLength = %d\n",
 		wlanStatus.CoexOperation, 
 		wlanStatus.WLANStatus,
 		wlanStatus.PrivilegeTime,
@@ -1906,7 +1901,7 @@ VOID SendAndesCCUForceMode(
 	struct CMD_UNIT CmdUnit;
 	INT ret = NDIS_STATUS_SUCCESS;
 	
-	printk("%s: -->\n", __FUNCTION__);
+	DEBUG(rt2x00dev, "-->\n");
 	coexTF.CoexOperation = TypeCoexCCUForceMode;
        coexTF.CoexMode = CoexMode;
        
@@ -1922,8 +1917,7 @@ VOID SendAndesCCUForceMode(
 	CmdUnit.u.ANDES.NeedWait = FALSE;
 	CmdUnit.u.ANDES.Timeout = 0;
 	
-	printk("%s: CoexOperation = %d, CoexMode = %d\n, PktLength = %d\n", 
-		__FUNCTION__, 
+	DEBUG(rt2x00dev, "CoexOperation = %d, CoexMode = %d\n, PktLength = %d\n", 
 		coexTF.CoexOperation, 
 		coexTF.CoexMode,
 		coexTFLength
@@ -1931,7 +1925,7 @@ VOID SendAndesCCUForceMode(
 
 	ret = AsicSendCmdToAndes(rt2x00dev, &CmdUnit);
 
-	printk("%s: <--\n", __FUNCTION__);
+	DEBUG(rt2x00dev, "<--\n");
        TDDFDDExclusiveRequest(rt2x00dev, COEX_MODE_RESET);
 	
 }
@@ -1959,7 +1953,7 @@ VOID SendAndesAFH(
         {
             return;
         }
-	printk("%s: -->\n", __FUNCTION__);
+	DEBUG(rt2x00dev, "-->\n");
 	coexAFH.CoexOperation = TypeAFH;
 
         if (BBPCurrentBW == BW_40)
@@ -2006,8 +2000,7 @@ VOID SendAndesAFH(
 	CmdUnit.u.ANDES.NeedWait = FALSE;
 	CmdUnit.u.ANDES.Timeout = 0;
 	
-	printk("%s: LinkStatus = %d, BW = %d, Channel = %d, BssHashID = %d, PktLength = %d\n", 
-		__FUNCTION__, 
+	DEBUG(rt2x00dev, "LinkStatus = %d, BW = %d, Channel = %d, BssHashID = %d, PktLength = %d\n", 
 		coexAFH.LinkStatus, 
 		coexAFH.BW, 
 		coexAFH.Channel,
@@ -2017,7 +2010,7 @@ VOID SendAndesAFH(
 
 	ret = AsicSendCmdToAndes(rt2x00dev, &CmdUnit);
 
-	printk("%s: <--\n", __FUNCTION__);
+	DEBUG(rt2x00dev, "<--\n");
 	
 }
 EXPORT_SYMBOL_GPL(SendAndesAFH);
@@ -2042,7 +2035,7 @@ void Set_BtDump_Proc(
 	
     if (IS_ERR(file)) 
     {
-        printk("error occured while opening file /tmp/bt_log_0x00080000_to_0x000A7FFF, exiting...\n");
+        DEBUG(rt2x00dev, "error occured while opening file /tmp/bt_log_0x00080000_to_0x000A7FFF, exiting...\n");
         set_fs(old_fs);
         return;
     }	

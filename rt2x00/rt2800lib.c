@@ -1294,7 +1294,7 @@ static void rt2800_MT7630_rfcsr_write(struct rt2x00_dev *rt2x00dev,
 
 	if ((i == 100))
 	{
-		printk("rt2800_MT7630_rfcsr_write Retry count exhausted or device removed!!!\n");
+		WARNING(rt2x00dev, "rt2800_MT7630_rfcsr_write Retry count exhausted or device removed!!!\n");
 		return;
 	}
 
@@ -1348,7 +1348,7 @@ static void rt2800_MT7630_rfcsr_read(struct rt2x00_dev *rt2x00dev,
 
 	if (rfcsr.field.RF_CSR_KICK == 1)
 	{																	
-		printk("RF read R%d=0x%X fail, i[%d], k[%d]\n", word, rfcsr.word,i,k);
+		DEBUG(rt2x00dev, "RF read R%d=0x%X fail, i[%d], k[%d]\n", word, rfcsr.word,i,k);
 	}
 }
 
@@ -1367,12 +1367,12 @@ static int rt2800_enable_wlan_mt7630(struct rt2x00_dev *rt2x00dev)
 		rt2x00_set_field32(&reg, WLAN_RSV1, 1);
 		rt2x00_set_field32(&reg, WLAN_RESET, 1);	
 		rt2800_register_write(rt2x00dev, WLAN_FUN_CTRL, reg);
-		printk("Reset(1) WlanFunCtrl.word = 0x%x\n", reg);
+		DEBUG(rt2x00dev, "Reset(1) WlanFunCtrl.word = 0x%x\n", reg);
 		udelay(2);
 		rt2x00_set_field32(&reg, WLAN_RSV1, 0);
 		rt2x00_set_field32(&reg, WLAN_RESET, 0);
 		rt2800_register_write(rt2x00dev, WLAN_FUN_CTRL, reg);
-		printk("Reset(2) WlanFunCtrl.word = 0x%x\n", reg);
+		DEBUG(rt2x00dev, "Reset(2) WlanFunCtrl.word = 0x%x\n", reg);
 		udelay(2);
 	}
 
@@ -1420,7 +1420,7 @@ static int rt2800_enable_wlan_mt7630(struct rt2x00_dev *rt2x00dev)
 	} while (count != 0);
 
 		rt2800_register_read(rt2x00dev, WLAN_FUN_CTRL, &reg);
-		printk("<== rt2800_enable_wlan_mt7630():  WlanFunCtrl = 0x%x\n", reg);
+		DEBUG(rt2x00dev, "<== WlanFunCtrl = 0x%x\n", reg);
 	return 0;
 }
 
@@ -1728,15 +1728,15 @@ int rt2800_load_firmware(struct rt2x00_dev *rt2x00dev,
 			msleep(1);
 		} 
 
-		printk("%s: COM_REG0(0x%x) = 0x%x\n", __FUNCTION__, 0x0730, reg);
+		DEBUG(rt2x00dev, "COM_REG0(0x%x) = 0x%x\n", 0x0730, reg);
 
 		if (reg != 0x1)
 		{
 			rt2800_register_read(rt2x00dev, 0x0700, &reg);
-			printk("%s: 0x0700 = 0x%x\n", __FUNCTION__, reg);
+			DEBUG(rt2x00dev, "0x0700 = 0x%x\n", reg);
 
 			rt2800_register_read(rt2x00dev, 0x0704, &reg);
-			printk("%s: 0x%x = 0x%x\n", __FUNCTION__, 0x0704, reg);
+			DEBUG(rt2x00dev, "0x%x = 0x%x\n", 0x0704, reg);
 			ERROR(rt2x00dev, "COM_REG0 register not ready.\n");
 		}
 	} else {	 
@@ -2297,10 +2297,10 @@ int rt2800_rfkill_poll(struct rt2x00_dev *rt2x00dev)
 {
 	u32 reg;
 
-	printk("===>%s:MT7630\n", __FUNCTION__);
+	DEBUG(rt2x00dev, "===> MT7630\n");
 	if (rt2x00_rt(rt2x00dev, RT3290) || rt2x00_rt(rt2x00dev, MT7630)) {
 		rt2800_register_read(rt2x00dev, WLAN_FUN_CTRL, &reg);
-		printk("rt2800_rfkill_poll WLAN_FUN_CTRL=0x%x\n",reg);
+		DEBUG(rt2x00dev, "rt2800_rfkill_poll WLAN_FUN_CTRL=0x%x\n",reg);
 		return rt2x00_get_field32(reg, WLAN_GPIO_IN_BIT0);
 	} else {
 		rt2800_register_read(rt2x00dev, GPIO_CTRL, &reg);
@@ -2642,12 +2642,12 @@ int rt2800_sta_add(struct rt2x00_dev *rt2x00dev, struct ieee80211_vif *vif,
 	struct rt2x00_sta *sta_priv = sta_to_rt2x00_sta(sta);
 	pht_cap = &sta->ht_cap;
 	rt2x00dev->ht_cap=pht_cap->cap;
-	printk("===>%s:MT7630\n", __FUNCTION__);
+	DEBUG(rt2x00dev, "===> MT7630\n");
 	/*
 	 * Find next free WCID.
 	 */
 	wcid = rt2800_find_wcid(rt2x00dev);
-	printk("===>%s:MT7630   wcid=%d\n", __FUNCTION__,wcid);
+	DEBUG(rt2x00dev, "===> MT7630   wcid=%d\n",wcid);
 
 	/*
 	 * Store selected wcid even if it is invalid so that we can
@@ -2655,7 +2655,7 @@ int rt2800_sta_add(struct rt2x00_dev *rt2x00dev, struct ieee80211_vif *vif,
 	 */
 	sta_priv->wcid = wcid;
 	COPY_MAC_ADDR(rt2x00dev->bssid, sta->addr);
-	printk("Connect to AP MAC: %pM WCID=%d\n", rt2x00dev->bssid,sta_priv->wcid);
+	DEBUG(rt2x00dev, "Connect to AP MAC: %pM WCID=%d\n", rt2x00dev->bssid,sta_priv->wcid);
 
 	/*
 	 * No space left in the device, however, we can still communicate
@@ -2694,7 +2694,7 @@ int rt2800_sta_remove(struct rt2x00_dev *rt2x00dev, int wcid)
 	 * get renewed when the WCID is reused.
 	 */
 	 u32 reg;
-	 printk("===>%s:MT7630\n", __FUNCTION__);
+	 DEBUG(rt2x00dev, "===> MT7630\n");
 	rt2800_config_wcid(rt2x00dev, NULL, wcid);
 	rt2x00dev->connected=0;
 	rt2x00dev->connect_channel=0;
@@ -2704,9 +2704,9 @@ int rt2800_sta_remove(struct rt2x00_dev *rt2x00dev, int wcid)
 	udelay(5000);
 	RTMP_IO_WRITE32(rt2x00dev, PCIE_REMAP_BASE4, 0x80000);
 	RTMP_IO_READ32(rt2x00dev, 0x100, &reg);
-	printk("===>%s:MT7630   0x80100 = 0x%x\n", __FUNCTION__,reg);
+	DEBUG(rt2x00dev, "===> MT7630   0x80100 = 0x%x\n",reg);
 	RTMP_IO_WRITE32(rt2x00dev, PCIE_REMAP_BASE4, 0x00);
-	printk("===>%s:MT7630   0x80100 = 0x%x\n", __FUNCTION__,reg);
+	DEBUG(rt2x00dev, "===> MT7630   0x80100 = 0x%x\n",reg);
 	//Set_BtDump_Proc(rt2x00dev,1);	 
 	rt2800_config_wcid(rt2x00dev, NULL, wcid);
 
@@ -3037,7 +3037,7 @@ void rt2800_config_ant(struct rt2x00_dev *rt2x00dev, struct antenna_setup *ant)
 	u8 r1;
 	u8 r3;
 	u16 eeprom;
-	printk("===>%s:MT7630\n", __FUNCTION__);
+	DEBUG(rt2x00dev, "===> MT7630\n");
 
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
@@ -3070,7 +3070,7 @@ void rt2800_config_ant(struct rt2x00_dev *rt2x00dev, struct antenna_setup *ant)
 
 			if (agc != agc_r0)
 				rt2800_MT7630_bbp_write(rt2x00dev, AGC1_R0, agc);
-		printk("MT7630 set Tx/Rx Ant ant->tx_chain_num=%d Ant ant->rx_chain_num=%d\n",ant->tx_chain_num,ant->rx_chain_num);
+		DEBUG(rt2x00dev, "MT7630 set Tx/Rx Ant ant->tx_chain_num=%d Ant ant->rx_chain_num=%d\n",ant->tx_chain_num,ant->rx_chain_num);
 		return;
 	}
 	
@@ -4097,7 +4097,7 @@ static void rt2800_config_channel_rf7630(struct rt2x00_dev *rt2x00dev,
 
 	if (conf_is_ht40(conf))
 	{
-		//printk("ch is ht40\n");
+		//DEBUG(rt2x00dev, "ch is ht40\n");
 		rf_bw = RF_BW_40;
 		if (conf_is_ht40_minus(conf)) {
 			RegValue |= 0x2e1;
@@ -4223,7 +4223,7 @@ static void rt2800_config_channel_rf7630(struct rt2x00_dev *rt2x00dev,
 			RFValue |= pMT76x0_freq_item->pllR24_b1b0;
 			rt2800_MT7630_rfcsr_write(rt2x00dev, RF_R24, RFValue,RF_BANK0);
 
-			printk("SwitchChannel#%d\n",rf->channel);
+			DEBUG(rt2x00dev, "SwitchChannel#%d\n",rf->channel);
 		}
 	}
 
@@ -4274,8 +4274,7 @@ static void rt2800_config_channel_rf7630(struct rt2x00_dev *rt2x00dev,
 							MT76x0_RF_INT_PA_RegTb[i].Value,
 							MT76x0_RF_INT_PA_RegTb[i].Bank);
 
-				printk("%s: INT_PA_RegTb - B%d.R%02d = 0x%02x\n", 
-							__FUNCTION__, 
+				DEBUG(rt2x00dev, "INT_PA_RegTb - B%d.R%02d = 0x%02x\n", 
 							MT76x0_RF_INT_PA_RegTb[i].Register,
 							MT76x0_RF_INT_PA_RegTb[i].Value,
 							MT76x0_RF_INT_PA_RegTb[i].Bank);
@@ -4349,14 +4348,14 @@ int AsicWaitPDMAIdle(struct rt2x00_dev *rt2x00dev, int round, int wait_us)
 	do {
 		rt2800_register_read(rt2x00dev, WPDMA_GLO_CFG, &GloCfg.word);
 		if ((GloCfg.field.TxDMABusy == 0)  && (GloCfg.field.RxDMABusy == 0)) {
-			printk("==>  DMAIdle, GloCfg=0x%x\n", GloCfg.word);
+			DEBUG(rt2x00dev, "==>  DMAIdle, GloCfg=0x%x\n", GloCfg.word);
 			return 0;
 		}
 
 		udelay(wait_us);
 	}while ((i++) < round);
 
-	printk("==>  DMABusy, GloCfg=0x%x\n", GloCfg.word);
+	DEBUG(rt2x00dev, "==>  DMABusy, GloCfg=0x%x\n", GloCfg.word);
 	
 	return 1;
 }
@@ -4378,7 +4377,7 @@ void RT28XXDMAEnable(struct rt2x00_dev *rt2x00dev)
 	GloCfg.field.EnableTxDMA = 1;
 	
 	rt2800_register_write(rt2x00dev, WPDMA_GLO_CFG, GloCfg.word);
-	printk("<== WRITE DMA offset 0x208 = 0x%x\n", GloCfg.word);	
+	DEBUG(rt2x00dev, "<== WRITE DMA offset 0x208 = 0x%x\n", GloCfg.word);	
 }
 EXPORT_SYMBOL_GPL(RT28XXDMAEnable);
 
@@ -4387,7 +4386,7 @@ void RTMPEnableRxTx(struct rt2x00_dev *rt2x00dev)
 
 	u32 rx_filter_flag;
 
-	printk("==> RTMPEnableRxTx\n");
+	DEBUG(rt2x00dev, "==>\n");
 
 	RT28XXDMAEnable(rt2x00dev);
 
@@ -4400,7 +4399,7 @@ void RTMPEnableRxTx(struct rt2x00_dev *rt2x00dev)
 		rt2800_register_write(rt2x00dev, MAC_SYS_CTRL, 0xc);
 	}
 
-	printk("<== RTMPEnableRxTx\n");	
+	DEBUG(rt2x00dev, "<==\n");	
 }
 EXPORT_SYMBOL_GPL(RTMPEnableRxTx);
 static void rt2800_config_channel(struct rt2x00_dev *rt2x00dev,
@@ -4433,14 +4432,14 @@ static void rt2800_config_channel(struct rt2x00_dev *rt2x00dev,
 						rt2x00dev->CommonCfg.Channel = rt2x00dev->CommonCfg.CentralChannel + 1;
 					else
 						rt2x00dev->CommonCfg.Channel = rt2x00dev->CommonCfg.CentralChannel + 2;
-					printk("BW=40 EXTCHA_BELOW CentralChannel=%d\n",rt2x00dev->CommonCfg.CentralChannel);
+					DEBUG(rt2x00dev, "BW=40 EXTCHA_BELOW CentralChannel=%d\n",rt2x00dev->CommonCfg.CentralChannel);
 			}
 			else
 			{
 					rtmp_bbp_set_ctrlch(rt2x00dev,EXTCHA_ABOVE);
 					rtmp_mac_set_ctrlch(rt2x00dev, EXTCHA_ABOVE);
 					rt2x00dev->CommonCfg.Channel = rt2x00dev->CommonCfg.CentralChannel - 2;
-					printk("BW=40 EXTCHA_ABOVE CentralChannel=%d\n",rt2x00dev->CommonCfg.CentralChannel);
+					DEBUG(rt2x00dev, "BW=40 EXTCHA_ABOVE CentralChannel=%d\n",rt2x00dev->CommonCfg.CentralChannel);
 					//printk("BW=40 EXTCHA_ABOVE\n");
 			}
 			rt2x00dev->CommonCfg.BBPCurrentBW=BW_40;
@@ -4451,7 +4450,7 @@ static void rt2800_config_channel(struct rt2x00_dev *rt2x00dev,
 					rtmp_mac_set_ctrlch(rt2x00dev, EXTCHA_NONE);
 					rt2x00dev->CommonCfg.BBPCurrentBW=BW_20;
 					rt2x00dev->CommonCfg.Channel = rt2x00dev->CommonCfg.CentralChannel;
-					printk("BW=20 EXTCHA_NONE\n");
+					DEBUG(rt2x00dev, "BW=20 EXTCHA_NONE\n");
 		}
 	}
 	if (rf->channel <= 14) {
@@ -5875,7 +5874,7 @@ static int rt2800_init_registers(struct rt2x00_dev *rt2x00dev)
 
 	reg=0;
 	rt2800_register_read(rt2x00dev, FCE_PSE_CTRL, &reg);
-	printk("reg FCE_PSE_CTRL =x%x\n",reg);
+	DEBUG(rt2x00dev, "reg FCE_PSE_CTRL =x%x\n",reg);
 	
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
@@ -5929,7 +5928,7 @@ static int rt2800_wait_bbp_rf_MT7630_ready(struct rt2x00_dev *rt2x00dev)
 
 	for (i = 0; i < REGISTER_BUSY_COUNT; i++) {
 		rt2800_MT7630_bbp_read(rt2x00dev, CORE_R0, &reg);
-		printk("BBP version = %x\n", reg);
+		DEBUG(rt2x00dev, "BBP version = %x\n", reg);
 		if (((reg == 0xffffffff) || (reg == 0x0)))
 			;
 		else
@@ -6122,7 +6121,7 @@ int rlt_bbp_is_ready(struct rt2x00_dev *rt2x00dev)
 	{
 		rt2800_MT7630_bbp_read(rt2x00dev, CORE_R0, &val);
 
-		printk("BBP version = %x\n", val);
+		DEBUG(rt2x00dev, "BBP version = %x\n", val);
 	} while ((++idx < 20) && ((val == 0xffffffff) || (val == 0x0)));
 
 	return (((val == 0xffffffff) || (val == 0x0)) ? 1 : 0);
@@ -6139,7 +6138,7 @@ static int rt2800_init_bbp(struct rt2x00_dev *rt2x00dev)
 	
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{		
-			printk("%s(): Init BBP Registers MT7630\n", __FUNCTION__);
+			DEBUG(rt2x00dev, "Init BBP Registers MT7630\n");
 			do
 			{
 				rt2800_register_read(rt2x00dev, MAC_STATUS_CFG, &MACValue);;
@@ -6147,7 +6146,7 @@ static int rt2800_init_bbp(struct rt2x00_dev *rt2x00dev)
 				if ((MACValue & 0x03) == 0)	/* if BB.RF is stable*/
 					break;
 				
-				printk("Check MAC_STATUS_CFG  = Busy = %x\n", MACValue);
+				DEBUG(rt2x00dev, "Check MAC_STATUS_CFG  = Busy = %x\n", MACValue);
 				RTMPusecDelay(1000);
 			} while (Index++ < 100);
 			
@@ -6157,13 +6156,13 @@ static int rt2800_init_bbp(struct rt2x00_dev *rt2x00dev)
 			
 			if (rlt_bbp_is_ready(rt2x00dev)==1)
 			{
-				printk("rt2800_wait_bbp_rf_MT7630_ready not ready\n");
+				DEBUG(rt2x00dev, "rt2800_wait_bbp_rf_MT7630_ready not ready\n");
 				return -EACCES;
 			}
 
 
 
-			printk("%s(): Init BBP Registers MT7630\n", __FUNCTION__);
+			DEBUG(rt2x00dev, "Init BBP Registers MT7630\n");
 
 
 			
@@ -6203,7 +6202,7 @@ static int rt2800_init_bbp(struct rt2x00_dev *rt2x00dev)
 			rt2800_register_read(rt2x00dev, TX_STA_CNT2, &MACValue);
 
 			rt2800_register_write(rt2x00dev, TXOP_CTRL_CFG, 0x583f);
-			printk("%s(): Init BBP Registers MT7630 complete\n", __FUNCTION__);
+			DEBUG(rt2x00dev, "Init BBP Registers MT7630 complete\n");
 			
 	} else {
 		if (unlikely(rt2800_wait_bbp_rf_ready(rt2x00dev) ||
@@ -7316,7 +7315,7 @@ static void rt2800_init_rfcsr(struct rt2x00_dev *rt2x00dev)
 	
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
-		printk("%s(): Init RF Registers MT7630\n", __FUNCTION__);
+		DEBUG(rt2x00dev, "Init RF Registers MT7630\n");
 		for(IdReg = 0; IdReg < MT76x0_RF_Central_RegTb_Size; IdReg++)
 		{
 			rt2800_MT7630_rfcsr_write(rt2x00dev,
@@ -7382,7 +7381,7 @@ static void rt2800_init_rfcsr(struct rt2x00_dev *rt2x00dev)
 		RFValue = (u8)(rt2x00dev->freq_offset & 0xFF);
 		rt2800_MT7630_rfcsr_write(rt2x00dev,RF_R22, RFValue, RF_BANK0);
 		rt2800_MT7630_rfcsr_read(rt2x00dev, RF_R22, &RFValue, RF_BANK0);
-		printk("%s: B0.R22 = 0x%02x\n", __FUNCTION__, RFValue);
+		DEBUG(rt2x00dev, "B0.R22 = 0x%02x\n", RFValue);
 #if 1
 		rt2800_MT7630_rfcsr_read(rt2x00dev,RF_R73, &RFValue,RF_BANK0);
 		RFValue |= 0x80;
@@ -7398,7 +7397,7 @@ static void rt2800_init_rfcsr(struct rt2x00_dev *rt2x00dev)
 		rt2800_MT7630_rfcsr_read(rt2x00dev, RF_R04, &RFValue, RF_BANK0);
 		RFValue = ((RFValue & ~0x80) | 0x80); 
 		rt2800_MT7630_rfcsr_write(rt2x00dev, RF_R04, RFValue, RF_BANK0);
-		printk("%s(): Init RF Registers MT7630 complete\n", __FUNCTION__);
+		DEBUG(rt2x00dev, "Init RF Registers MT7630 complete\n");
 		return;
 	}
 	
@@ -7443,7 +7442,7 @@ static int rt2800lib_init_queues(struct rt2x00_dev *rt2x00dev)
 	/*
 	 * Initialize registers.
 	 */
-	printk("==>rt2800lib_init_queues\n");
+	DEBUG(rt2x00dev, "==>\n");
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
 		for (i = 0 ; i < 4; i++)
@@ -7454,7 +7453,7 @@ static int rt2800lib_init_queues(struct rt2x00_dev *rt2x00dev)
 			rt2800_register_write(rt2x00dev, TX_RING_BASE + offset, entry_priv->desc_dma);
 			rt2800_register_write(rt2x00dev, TX_RING_CNT + offset, rt2x00dev->tx[i].limit);
 			rt2800_register_write(rt2x00dev, TX_RING_CIDX + offset, 0);
-			printk("-->TX_RING: Base=0x%llx, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->tx[i].limit);
+			DEBUG(rt2x00dev, "-->TX_RING: Base=0x%llx, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->tx[i].limit);
 		}
 
 		offset = 4 * 0x10;
@@ -7473,7 +7472,7 @@ static int rt2800lib_init_queues(struct rt2x00_dev *rt2x00dev)
 		rt2800_register_write(rt2x00dev, RX_RING_CIDX, rt2x00dev->rx[0].limit - 1);
 		rt2800_register_write(rt2x00dev, RX_RING_CIDX + 0x10, rt2x00dev->rx[0].limit - 1);
 
-		printk("-->RX_RING: Base=0x%llx, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->rx[0].limit);
+		DEBUG(rt2x00dev, "-->RX_RING: Base=0x%llx, Cnt=%d\n", entry_priv->desc_dma,rt2x00dev->rx[0].limit);
 		//printk("InitTxRxRing\n");
 
 		AsicInitTxRxRing(rt2x00dev);
@@ -7484,13 +7483,13 @@ static int rt2800lib_init_queues(struct rt2x00_dev *rt2x00dev)
 	
 		ret = rt2800_wait_wpdma_ready(rt2x00dev);
 		if (ret != 0)
-			printk("DMA busy\n");
+			DEBUG(rt2x00dev, "DMA busy\n");
 		
 		rt2800_disable_wpdma(rt2x00dev);
 		rt2800_register_write(rt2x00dev, DELAY_INT_CFG, 0);
 
 	}
-	printk("<===rt2800lib_init_queues\n");
+	DEBUG(rt2x00dev, "<===\n");
 	return 0;
 }
 
@@ -7639,16 +7638,16 @@ unsigned char AsicCheckCommanOk(struct rt2x00_dev *rt2x00dev, unsigned char Comm
 		if (((CmdStatus & ThisCIDMask) == 0x1) || ((CmdStatus & ThisCIDMask) == 0x100) 
 			|| ((CmdStatus & ThisCIDMask) == 0x10000) || ((CmdStatus & ThisCIDMask) == 0x1000000))
 		{
-			printk("--> AsicCheckCommanOk CID = 0x%x, CmdStatus= 0x%x \n", CID, CmdStatus);
+			DEBUG(rt2x00dev, "--> AsicCheckCommanOk CID = 0x%x, CmdStatus= 0x%x \n", CID, CmdStatus);
 			rt2800_register_write(rt2x00dev, H2M_MAILBOX_STATUS, 0xffffffff);
 			rt2800_register_write(rt2x00dev, H2M_MAILBOX_CID, 0xffffffff);
 			return 1;
 		}
-		printk("--> AsicCheckCommanFail1 CID = 0x%x, CmdStatus= 0x%x \n", CID, CmdStatus);
+		DEBUG(rt2x00dev, "--> AsicCheckCommanFail1 CID = 0x%x, CmdStatus= 0x%x \n", CID, CmdStatus);
 	}
 	else
 	{
-		printk("--> AsicCheckCommanFail2 Timeout Command = %d, CmdStatus= 0x%x \n", Command, CmdStatus);
+		DEBUG(rt2x00dev, "--> AsicCheckCommanFail2 Timeout Command = %d, CmdStatus= 0x%x \n", Command, CmdStatus);
 	}
 	/* Clear Command and Status.*/
 	rt2800_register_write(rt2x00dev, H2M_MAILBOX_STATUS, 0xffffffff);
@@ -7670,7 +7669,7 @@ int rtmp_bbp_set_rxpath(struct rt2x00_dev *rt2x00dev, int rxpath)
 	if (agc != agc_r0)
 		rt2800_register_write(rt2x00dev, AGC1_R0, agc);
 
-	printk("%s(): rxpath=%d, Set AGC1_R0=0x%x, agc_r0=0x%x\n", __FUNCTION__, rxpath, agc, agc_r0);
+	DEBUG(rt2x00dev, "rxpath=%d, Set AGC1_R0=0x%x, agc_r0=0x%x\n", rxpath, agc, agc_r0);
 	return 0;
 }
 
@@ -7695,7 +7694,7 @@ int rtmp_bbp_set_txdac(struct rt2x00_dev *rt2x00dev, int tx_dac)
 	if (txbe != txbe_r5)
 		rt2800_register_write(rt2x00dev, TXBE_R5, txbe);
 
-	printk("%s(): txdac=%d, Set txbe=0x%x, txbe_r5=0x%x\n", __FUNCTION__, tx_dac, txbe, txbe_r5);
+	DEBUG(rt2x00dev, "txdac=%d, Set txbe=0x%x, txbe_r5=0x%x\n", tx_dac, txbe, txbe_r5);
 
 	return 0;
 }
@@ -7712,7 +7711,7 @@ int rt2800_enable_radio(struct rt2x00_dev *rt2x00dev)
 	/*
 	 * Initialize all registers.
 	 */
-	printk("===>%s: \n", __FUNCTION__);
+	DEBUG(rt2x00dev, "===>\n");
 	
 	
 	if (rt2x00_rt(rt2x00dev, MT7630))
@@ -7738,7 +7737,7 @@ int rt2800_enable_radio(struct rt2x00_dev *rt2x00dev)
 			return -EIO;
 
 		mac = rt2x00_eeprom_addr(rt2x00dev, EEPROM_MAC_ADDR_0);
-		printk("MAC %pM \n", mac);
+		DEBUG(rt2x00dev, "MAC %pM \n", mac);
 		COPY_MAC_ADDR(rt2x00dev->addr,mac);
 		{
 			u32 WlanFunCtrl = 0, CmbCtrl = 0, CoexCfg0 = 0, CoexCfg3 = 0;
@@ -7758,7 +7757,7 @@ int rt2800_enable_radio(struct rt2x00_dev *rt2x00dev)
 			CoexCfg3 |= BIT3; /* 0x4C[3]=1 */
 			WlanFunCtrl |= BIT6; /* 0x80[6]=1 */
 			CmbCtrl |= (BIT14 | BIT11); /*for Rfkill*/
-			printk("%s -7630 Dual antenna mode\n", __FUNCTION__);
+			DEBUG(rt2x00dev, "7630 Dual antenna mode\n");
 
 	
 			rt2800_register_write(rt2x00dev, WLAN_FUN_CTRL, WlanFunCtrl);
@@ -8008,7 +8007,7 @@ static int rt2800_validate_eeprom(struct rt2x00_dev *rt2x00dev)
 		eth_random_addr(mac);
 		rt2x00_eeprom_dbg(rt2x00dev, "MAC: %pM\n", mac);
 	}
-	printk("MAC: %pM\n", mac);
+	DEBUG(rt2x00dev, "MAC: %pM\n", mac);
 	rt2x00_eeprom_read(rt2x00dev, EEPROM_NIC_CONF0, &word);
 	if (word == 0xffff) {
 		rt2x00_set_field16(&word, EEPROM_NIC_CONF0_RXPATH, 2);
@@ -8146,7 +8145,7 @@ static int rt2800_init_eeprom(struct rt2x00_dev *rt2x00dev)
 	else
 		rt2800_register_read(rt2x00dev, MAC_CSR0, &reg);
 
-	printk("MAC_version=0x%x\n",reg);
+	DEBUG(rt2x00dev, "MAC_version=0x%x\n",reg);
 	
 	if (rt2x00_rt(rt2x00dev, RT3290) ||
 	    rt2x00_rt(rt2x00dev, RT5390) ||
@@ -8156,7 +8155,7 @@ static int rt2800_init_eeprom(struct rt2x00_dev *rt2x00dev)
 	else
 		rf = rt2x00_get_field16(eeprom, EEPROM_NIC_CONF0_RF_TYPE);
 
-	printk("RFIC =0x%x\n",rf);
+	DEBUG(rt2x00dev, "RFIC =0x%x\n",rf);
 
 	
 	switch (rf) {
@@ -8188,8 +8187,8 @@ static int rt2800_init_eeprom(struct rt2x00_dev *rt2x00dev)
 
 	rt2x00_set_rf(rt2x00dev, rf);
 
-	printk("rt2x00dev->chip.rt = 0x%x\n",rt2x00dev->chip.rt);
-	printk("rt2x00dev->chip.rf = 0x%x\n",rt2x00dev->chip.rf);
+	DEBUG(rt2x00dev, "rt2x00dev->chip.rt = 0x%x\n",rt2x00dev->chip.rt);
+	DEBUG(rt2x00dev, "rt2x00dev->chip.rf = 0x%x\n",rt2x00dev->chip.rf);
 	
 	/*
 	 * Identify default antenna configuration.
@@ -8757,7 +8756,7 @@ static int rt2800_probe_rt(struct rt2x00_dev *rt2x00dev)
 	else
 		rt2800_register_read(rt2x00dev, MAC_CSR0, &reg);
 
-	printk("MAC_version=0x%x\n",reg);
+	DEBUG(rt2x00dev, "MAC_version=0x%x\n",reg);
 	
 	rt = rt2x00_get_field32(reg, MAC_CSR0_CHIPSET);
 	rev = rt2x00_get_field32(reg, MAC_CSR0_REVISION);
@@ -9099,7 +9098,7 @@ void mt7630_show_rf(struct rt2x00_dev *rt2x00dev)
 			for (rfId = 0; rfId <= maxRFIdx; rfId++)
 			{
 				rt2800_MT7630_rfcsr_read(rt2x00dev,rfId, &regRF,bank_Id);
-				printk("%d %03d = %02X\n", bank_Id, rfId, regRF);
+				DEBUG(rt2x00dev, "%d %03d = %02X\n", bank_Id, rfId, regRF);
 			}
 		}
 }
@@ -9128,7 +9127,7 @@ void mt7630_show_bbp(struct rt2x00_dev *rt2x00dev)
 			for (reg = bbp_regs[i].Register; reg <= bbp_regs[i].Value; reg += 4)
 			{
 				rt2800_MT7630_bbp_read(rt2x00dev, reg, &regBBP);
-				printk("%04x = %08x\n", reg, regBBP); 
+				DEBUG(rt2x00dev, "%04x = %08x\n", reg, regBBP); 
 			}
 		}
 }
@@ -9144,7 +9143,7 @@ void AsicRemoveSharedKeyEntry(
 	SHAREDKEY_MODE_STRUC csr1;
 	UINT16 SharedKeyTableBase, SharedKeyModeBase;
 	
-	printk("AsicRemoveSharedKeyEntry: #%d \n", BssIndex*4 + KeyIdx);
+	DEBUG(rt2x00dev, "AsicRemoveSharedKeyEntry: #%d \n", BssIndex*4 + KeyIdx);
 	{
 		SharedKeyTableBase = SHARED_KEY_TABLE_BASE_7630;
 		SharedKeyModeBase = SHARED_KEY_MODE_BASE_7630;
@@ -9173,7 +9172,7 @@ void AsicRemoveSharedKeyEntry(
 		else
 			csr1.field.Bss1Key3CipherAlg = 0;
 	}
-	printk("Write: SHARED_KEY_MODE_BASE at this Bss[%d] = 0x%x \n", BssIndex, csr1.word);
+	DEBUG(rt2x00dev, "Write: SHARED_KEY_MODE_BASE at this Bss[%d] = 0x%x \n", BssIndex, csr1.word);
 	rt2800_register_write(rt2x00dev, SharedKeyModeBase+4*(BssIndex/2), csr1.word);
 }
 
