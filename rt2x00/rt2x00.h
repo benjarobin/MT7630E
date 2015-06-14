@@ -2910,7 +2910,7 @@ void RtmpAllocDescBuf(
 	OUT PNDIS_PHYSICAL_ADDRESS	phy_addr);
 
 VOID dumpTxWI(struct rt2x00_dev *rt2x00dev, TXWI_STRUC *pTxWI);
-void hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen);
+void rt2x00_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen);
 
 VOID SendAndesWLANStatus(
 	IN struct rt2x00_dev *rt2x00dev,

@@ -48,7 +48,7 @@
 #include "rt2800.h"
 #include "rt2800pci.h"
 
-void MT_2800pci_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen);
+void rt2x00_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen);
 extern int AsicWaitPDMAIdle(struct rt2x00_dev *rt2x00dev, int round, int wait_us);
 extern void RTMPEnableRxTx(struct rt2x00_dev *rt2x00dev);
 
@@ -975,23 +975,6 @@ static void rt2800pci_write_tx_desc(struct queue_entry *entry,
 	skbdesc->desc_len = TXD_DESC_SIZE;
 }
 
-void MT_2800pci_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen)
-{
-	unsigned char *pt;
-	int x;
-	pt = pSrcBufVA;
-	printk("%s: %p, len = %d\n", str, pSrcBufVA, SrcBufLen);
-	for (x = 0; x < SrcBufLen; x++) {
-		if (x % 16 == 0)
-			printk("0x%04x : ", x);
-		printk("%02x ", ((unsigned char)pt[x]));
-		if (x % 16 == 15)
-			printk("\n");
-	}
-	printk("\n");
-}
-
-
 /*
  * RX control handlers
  */
@@ -1011,7 +994,7 @@ static void rt2800pci_fill_rxdone(struct queue_entry *entry,
 
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
-			//MT_2800pci_hex_dump("rxd", rxd, 16);
+			//rt2x00_hex_dump("rxd", rxd, 16);
 			unsigned char hw_rx_info[16];
 			//unsigned char hw_fce[4];
 			//__le32 *destrxd = NULL;
@@ -1026,12 +1009,12 @@ static void rt2800pci_fill_rxdone(struct queue_entry *entry,
 
 			
 			//rxd = &hw_rx_info[0];
-			//MT_2800pci_hex_dump("rxd", rxd, 16);
-			//MT_2800pci_hex_dump("skb->data(0)", entry->skb->data, 64);
+			//rt2x00_hex_dump("rxd", rxd, 16);
+			//rt2x00_hex_dump("skb->data(0)", entry->skb->data, 64);
 			//rt2x00_desc_read(hw_rx_info, 0, &word);
 			//rt2x00_desc_read(rxd, 3, &word);
 			
-			//MT_2800pci_hex_dump("skb->data(1)", entry->skb->data, entry->skb->len);
+			//rt2x00_hex_dump("skb->data(1)", entry->skb->data, entry->skb->len);
 			
 	} else {
 		rt2x00_desc_read(rxd, 3, &word);

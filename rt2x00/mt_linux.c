@@ -184,12 +184,12 @@ INT PCIKickOutCmd(
 		return NDIS_STATUS_FAILURE;
 	}
 
-	hex_dump("Buf", Buf, Len);
+	rt2x00_hex_dump("Buf", Buf, Len);
 	RTMP_IRQ_LOCK(&rt2x00dev->CtrlRingLock, IrqFlags);
 
 	Status = RTMPAllocateNdisPacket(rt2x00dev, &pPacket, NULL, 0, Buf+TXINFO_SIZE, Len-TXINFO_SIZE);
 
-	hex_dump("pPacket->data", GET_OS_PKT_DATAPTR(pPacket), Len-TXINFO_SIZE);
+	rt2x00_hex_dump("pPacket->data", GET_OS_PKT_DATAPTR(pPacket), Len-TXINFO_SIZE);
 	if (Status != NDIS_STATUS_SUCCESS)
 	{
 		DEBUG(rt2x00dev, "PCIKickOutCmd (error:: can't allocate NDIS PACKET)\n");
@@ -308,8 +308,8 @@ INT AsicSendCmdToAndes(struct rt2x00_dev *rt2x00dev, struct CMD_UNIT *CmdUnit)
 	Pos += sizeof(*TxInfoCmd);
 	
 	NdisMoveMemory(Pos, CmdUnit->u.ANDES.CmdPayload, CmdUnit->u.ANDES.CmdPayloadLen);
-	hex_dump("CmdUnit->u.ANDES.CmdPayload", CmdUnit->u.ANDES.CmdPayload, CmdUnit->u.ANDES.CmdPayloadLen);
-	hex_dump("AsicSendCmdToAndes", Buf, VarLen);
+	rt2x00_hex_dump("CmdUnit->u.ANDES.CmdPayload", CmdUnit->u.ANDES.CmdPayload, CmdUnit->u.ANDES.CmdPayloadLen);
+	rt2x00_hex_dump("AsicSendCmdToAndes", Buf, VarLen);
 
 	PCIKickOutCmd(rt2x00dev, Buf, VarLen);
 
@@ -1792,7 +1792,7 @@ static UCHAR *txwi_txop_str[]={"HT_TXOP", "PIFS", "SIFS", "BACKOFF", "Invalid"};
 #define TXWI_TXOP_STR(_x)	((_x) <= 3 ? txwi_txop_str[(_x)]: txwi_txop_str[4])
 VOID dumpTxWI(struct rt2x00_dev *rt2x00dev, TXWI_STRUC *pTxWI)
 {
-	hex_dump("TxWI Raw Data: ", (UCHAR *)pTxWI, sizeof(TXWI_STRUC));
+	rt2x00_hex_dump("TxWI Raw Data: ", (UCHAR *)pTxWI, sizeof(TXWI_STRUC));
 
 	printk("TxWI Fields:\n");
 	printk("\tPHYMODE=%d(%s)\n", pTxWI->TxWIPHYMODE,  get_phymode_str(pTxWI->TxWIPHYMODE));
@@ -1816,8 +1816,8 @@ VOID dumpTxWI(struct rt2x00_dev *rt2x00dev, TXWI_STRUC *pTxWI)
 }
 EXPORT_SYMBOL_GPL(dumpTxWI);
 
-
-void hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen)
+#ifdef CONFIG_RT2X00_DEBUG
+void rt2x00_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen)
 {
 	unsigned char *pt;
 	int x;
@@ -1832,7 +1832,12 @@ void hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen)
 	}
 	printk("\n");
 }
-EXPORT_SYMBOL_GPL(hex_dump);
+#else
+void rt2x00_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen)
+{
+}
+#endif
+EXPORT_SYMBOL_GPL(rt2x00_hex_dump);
 
 //
 // SendAndesWLANStatus
@@ -1869,7 +1874,7 @@ VOID SendAndesWLANStatus(
 		wlanStatusLength
 		);
 
-	//hex_dump("SendLEDCmd: ", LEDParameter, sizeof(LEDParameter));
+	//rt2x00_hex_dump("SendLEDCmd: ", LEDParameter, sizeof(LEDParameter));
 	NdisZeroMemory(&CmdUnit, sizeof(CmdUnit));
 	
 	CmdUnit.u.ANDES.Type = PKT_CMD_TYPE_COEX_OP;

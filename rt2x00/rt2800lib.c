@@ -67,21 +67,6 @@ struct lib_queue_entry_priv_pci {
 	dma_addr_t desc_dma;
 };
 
-void lib_hex_dump(char *str, unsigned char *pSrcBufVA, u32 SrcBufLen)
-{
-	unsigned char *pt;
-	int x;
-	pt = pSrcBufVA;
-	printk("%s: %p, len = %d\n", str, pSrcBufVA, SrcBufLen);
-	for (x = 0; x < SrcBufLen; x++) {
-		if (x % 16 == 0)
-			printk("0x%04x : ", x);
-		printk("%02x ", ((unsigned char)pt[x]));
-		if (x % 16 == 15)
-			printk("\n");
-	}
-	printk("\n");
-}
 extern WLAN_FUN_CTRL_STRUC g_WlanFunCtrl;
 
 /* BBP Init Table*/
