@@ -1313,16 +1313,17 @@ static inline void rt2800pci_enable_interrupt(struct rt2x00_dev *rt2x00dev,
 					      struct rt2x00_field32 irq_field)
 {
 	u32 reg;
+	unsigned long irqflags;
 
 	/*
 	 * Enable a single interrupt. The interrupt mask register
 	 * access needs locking.
 	 */
-	spin_lock_irq(&rt2x00dev->irqmask_lock);
+	spin_lock_irqsave(&rt2x00dev->irqmask_lock, irqflags);
 	rt2x00mmio_register_read(rt2x00dev, INT_MASK_CSR, &reg);
 	rt2x00_set_field32(&reg, irq_field, 1);
 	rt2x00mmio_register_write(rt2x00dev, INT_MASK_CSR, reg);
-	spin_unlock_irq(&rt2x00dev->irqmask_lock);
+	spin_unlock_irqrestore(&rt2x00dev->irqmask_lock, irqflags);
 }
 
 static void rt2800pci_txstatus_tasklet(unsigned long data)
