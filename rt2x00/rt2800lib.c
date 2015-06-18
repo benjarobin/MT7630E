@@ -38,6 +38,7 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+#include <linux/version.h>
 
 #include "rt2x00.h"
 #include "rt2800lib.h"
@@ -1338,6 +1339,7 @@ static void rt2800_MT7630_rfcsr_read(struct rt2x00_dev *rt2x00dev,
 	}
 }
 
+#if 0
 static int rt2800_enable_wlan_mt7630(struct rt2x00_dev *rt2x00dev)
 {
 	u32 reg;
@@ -1409,6 +1411,7 @@ static int rt2800_enable_wlan_mt7630(struct rt2x00_dev *rt2x00dev)
 		DEBUG(rt2x00dev, "<== WlanFunCtrl = 0x%x\n", reg);
 	return 0;
 }
+#endif
 
 static int rt2800_enable_wlan_rt3290(struct rt2x00_dev *rt2x00dev)
 {
@@ -5907,6 +5910,7 @@ static int rt2800_init_registers(struct rt2x00_dev *rt2x00dev)
 	return 0;
 }
 
+#if 0
 static int rt2800_wait_bbp_rf_MT7630_ready(struct rt2x00_dev *rt2x00dev)
 {
 	unsigned int i;
@@ -5926,6 +5930,7 @@ static int rt2800_wait_bbp_rf_MT7630_ready(struct rt2x00_dev *rt2x00dev)
 	ERROR(rt2x00dev, "BBP/RF register access failed, aborting.\n");
 	return -EACCES;
 }
+#endif
 
 static int rt2800_wait_bbp_rf_ready(struct rt2x00_dev *rt2x00dev)
 {
@@ -7499,6 +7504,7 @@ typedef	union _MAC_DW1_STRUC {
 	u32 word;
 }	MAC_DW1_STRUC;
 
+#if 0
 static void MT76x0_CalculateTxpower(
 	u8 bMinus,
 	u16 InputTxpower,
@@ -7571,6 +7577,7 @@ static void MT76x0_CalculateTxpower(
 	*pTxpower1 = t1;
 	*pTxpower2 = t2;
 }
+#endif
 
 #define PowerSafeCID		1
 #define PowerRadioOffCID	2
@@ -9051,6 +9058,15 @@ int rt2800_get_survey(struct ieee80211_hw *hw, int idx,
 	rt2800_register_read(rt2x00dev, CH_BUSY_STA_SEC, &busy_ext);
 
 	if (idle || busy) {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 0, 0)
+		survey->filled = SURVEY_INFO_CHANNEL_TIME |
+				 SURVEY_INFO_CHANNEL_TIME_BUSY |
+				 SURVEY_INFO_CHANNEL_TIME_EXT_BUSY;
+
+		survey->channel_time = (idle + busy) / 1000;
+		survey->channel_time_busy = busy / 1000;
+		survey->channel_time_ext_busy = busy_ext / 1000;
+#else
 		survey->filled = SURVEY_INFO_TIME |
 				 SURVEY_INFO_TIME_BUSY |
 				 SURVEY_INFO_TIME_EXT_BUSY;
@@ -9058,6 +9074,7 @@ int rt2800_get_survey(struct ieee80211_hw *hw, int idx,
 		survey->time = (idle + busy) / 1000;
 		survey->time_busy = busy / 1000;
 		survey->time_ext_busy = busy_ext / 1000;
+#endif
 	}
 
 	if (!(hw->conf.flags & IEEE80211_CONF_OFFCHANNEL))
