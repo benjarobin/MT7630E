@@ -1996,6 +1996,7 @@ VOID SendAndesAFH(
 	
 }
 
+#if 0
 void Set_BtDump_Proc(
 	IN 	struct rt2x00_dev *rt2x00dev,
 	IN int index)
@@ -2054,7 +2055,7 @@ void Set_BtDump_Proc(
 	RTMP_IO_WRITE32(rt2x00dev, PCIE_REMAP_BASE4, 0x00);
 	filp_close(file, NULL);
 }
-
+#endif
 
 VOID MLMEHook(
 	IN 	struct rt2x00_dev *rt2x00dev,

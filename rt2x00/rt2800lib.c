@@ -2671,7 +2671,7 @@ int rt2800_sta_remove(struct rt2x00_dev *rt2x00dev, int wcid)
 	rt2800_config_wcid(rt2x00dev, NULL, wcid);
 	rt2x00dev->connected=0;
 	rt2x00dev->connect_channel=0;
-	Set_BtDump_Proc(rt2x00dev,1);
+	//Set_BtDump_Proc(rt2x00dev,1);
 	BtAFHCtl(rt2x00dev, rt2x00dev->CommonCfg.BBPCurrentBW, rt2x00dev->CommonCfg.Channel, rt2x00dev->CommonCfg.CentralChannel, TRUE);		
       SendAndesAFH(rt2x00dev, rt2x00dev->CommonCfg.BBPCurrentBW,  rt2x00dev->CommonCfg.Channel, rt2x00dev->CommonCfg.CentralChannel, TRUE, 1);	
 	udelay(5000);
