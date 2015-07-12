@@ -2679,7 +2679,6 @@ int rt2800_sta_remove(struct rt2x00_dev *rt2x00dev, int wcid)
 	RTMP_IO_READ32(rt2x00dev, 0x100, &reg);
 	DEBUG(rt2x00dev, "===> MT7630   0x80100 = 0x%x\n",reg);
 	RTMP_IO_WRITE32(rt2x00dev, PCIE_REMAP_BASE4, 0x00);
-	DEBUG(rt2x00dev, "===> MT7630   0x80100 = 0x%x\n",reg);
 	//Set_BtDump_Proc(rt2x00dev,1);	 
 	rt2800_config_wcid(rt2x00dev, NULL, wcid);
 
@@ -4055,7 +4054,7 @@ static void rt2800_config_channel_rf7630(struct rt2x00_dev *rt2x00dev,
 	u32 IdReg = 0, MacReg = 0, i = 0, RfBand = 0;
 	const MT76x0_FREQ_ITEM *pMT76x0_freq_item = NULL;
 	unsigned char BBPCurrentBW;
-	printk("==>rt2800_config_channel_rf7630 ch%d\n",rf->channel);
+	DEBUG(rt2x00dev, "==> ch%d\n",rf->channel);
 	//return;
 	
 	
@@ -4377,8 +4376,7 @@ static void rt2800_config_channel(struct rt2x00_dev *rt2x00dev,
 	u8 bbp, rfcsr;
 	if (rt2x00_rt(rt2x00dev, MT7630))
 	{
-		//printk("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n");
-		//printk("===>rt2800_config_channel channel=%d\n",rf->channel);
+		//DEBUG(rt2x00dev, "channel=%d\n",rf->channel);
 		rt2x00dev->CommonCfg.CentralChannel=rf->channel;
 		
 		if (conf_is_ht40(conf))
