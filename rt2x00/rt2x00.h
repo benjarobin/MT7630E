@@ -52,7 +52,7 @@
 /*
  * Module information.
  */
-#define DRV_VERSION	"2.3.2"
+#define DRV_VERSION	"2.3.3"
 #define DRV_PROJECT	"http://rt2x00.serialmonkey.com"
 
 
