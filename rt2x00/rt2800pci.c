@@ -1574,7 +1574,11 @@ static const struct ieee80211_ops rt2800pci_mac80211_ops = {
 	.sw_scan_start		= rt2x00mac_sw_scan_start,
 	.sw_scan_complete	= rt2x00mac_sw_scan_complete,
 	.get_stats		= rt2x00mac_get_stats,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 2, 0)
 	.get_tkip_seq		= rt2800_get_tkip_seq,
+#else
+    .get_key_seq		= rt2800_get_key_seq,
+#endif
 	.set_rts_threshold	= rt2800_set_rts_threshold,
 	.sta_add		= rt2x00mac_sta_add,
 	.sta_remove		= rt2x00mac_sta_remove,
