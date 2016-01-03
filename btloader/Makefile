@@ -1,7 +1,7 @@
 obj-m := mt76xx.o
-KVERSION:= $(shell uname -r)
+KERNELRELEASE ?= $(shell uname -r)
 
 all:
-	$(MAKE) -C /lib/modules/$(KVERSION)/build M=$(PWD) modules
+	$(MAKE) -C /lib/modules/$(KERNELRELEASE)/build M=$(PWD) modules
 clean:
-	$(MAKE) -C /lib/modules/$(KVERSION)/build M=$(PWD) clean
+	$(MAKE) -C /lib/modules/$(KERNELRELEASE)/build M=$(PWD) clean
