@@ -1,7 +1,8 @@
 obj-m := mt76xx.o
 KERNELRELEASE ?= $(shell uname -r)
+KDIR ?= /lib/modules/$(KERNELRELEASE)/build
 
 all:
-	$(MAKE) -C /lib/modules/$(KERNELRELEASE)/build M=$(PWD) modules
+	$(MAKE) -C $(KDIR) M=$(PWD) modules
 clean:
-	$(MAKE) -C /lib/modules/$(KERNELRELEASE)/build M=$(PWD) clean
+	$(MAKE) -C $(KDIR) M=$(PWD) clean
