@@ -15,7 +15,8 @@ mt7630e-y	+= rt2800pci.o
 
 obj-m		+= mt7630e.o
 
-KDIR ?= /lib/modules/`uname -r`/build
+KERNELRELEASE ?= $(shell uname -r)
+KDIR ?= /lib/modules/$(KERNELRELEASE)/build
 
 all:
 	$(MAKE) -C $(KDIR) M=$(PWD) modules
