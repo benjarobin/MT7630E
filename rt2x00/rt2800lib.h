@@ -225,7 +225,10 @@ int rt2800_conf_tx(struct ieee80211_hw *hw,
 		   const struct ieee80211_tx_queue_params *params);
 u64 rt2800_get_tsf(struct ieee80211_hw *hw, struct ieee80211_vif *vif);
 
-
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0)
+int rt2800_ampdu_action(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+						struct ieee80211_ampdu_params *params);
+#else
 int rt2800_ampdu_action(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 			enum ieee80211_ampdu_mlme_action action,
 			struct ieee80211_sta *sta, u16 tid, u16 *ssn,
@@ -234,6 +237,7 @@ int rt2800_ampdu_action(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 			, bool amsdu
 #endif
 );
+#endif
 
 int rt2800_get_survey(struct ieee80211_hw *hw, int idx,
 		      struct survey_info *survey);

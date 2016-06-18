@@ -3027,16 +3027,15 @@ void rt2800_config_ant(struct rt2x00_dev *rt2x00dev, struct antenna_setup *ant)
 		if (txbe != txbe_r5)
 			rt2800_MT7630_bbp_write(rt2x00dev, TXBE_R5, txbe);
 
+		rt2800_MT7630_bbp_read(rt2x00dev, AGC1_R0, &agc_r0);
+		agc = agc_r0 & (~0x18);
+		if(ant->rx_chain_num == 2)
+			agc |= (0x8);
+		else if(ant->rx_chain_num == 1)
+			agc |= (0x0);
 
-			rt2800_MT7630_bbp_read(rt2x00dev, AGC1_R0, &agc_r0);
-			agc = agc_r0 & (~0x18);
-			if(ant->rx_chain_num == 2)
-				agc |= (0x8);
-			else if(ant->rx_chain_num == 1)
-				agc |= (0x0);
-
-			if (agc != agc_r0)
-				rt2800_MT7630_bbp_write(rt2x00dev, AGC1_R0, agc);
+		if (agc != agc_r0)
+			rt2800_MT7630_bbp_write(rt2x00dev, AGC1_R0, agc);
 		DEBUG(rt2x00dev, "MT7630 set Tx/Rx Ant ant->tx_chain_num=%d Ant ant->rx_chain_num=%d\n",ant->tx_chain_num,ant->rx_chain_num);
 		return;
 	}
@@ -8984,7 +8983,14 @@ u64 rt2800_get_tsf(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
 
 	return tsf;
 }
-
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0)
+int rt2800_ampdu_action(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+						struct ieee80211_ampdu_params *params)
+{
+	struct ieee80211_sta *sta = params->sta;
+	enum ieee80211_ampdu_mlme_action action = params->action;
+	u16 tid = params->tid;
+#else
 int rt2800_ampdu_action(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 			enum ieee80211_ampdu_mlme_action action,
 			struct ieee80211_sta *sta, u16 tid, u16 *ssn,
@@ -8994,6 +9000,7 @@ int rt2800_ampdu_action(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 #endif
 )
 {
+#endif
 	struct rt2x00_sta *sta_priv = (struct rt2x00_sta *)sta->drv_priv;
 	int ret = 0;
 
