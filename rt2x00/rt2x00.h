@@ -52,7 +52,7 @@
 /*
  * Module information.
  */
-#define DRV_VERSION	"2.3.6"
+#define DRV_VERSION	"2.3.7"
 #define DRV_PROJECT	"http://rt2x00.serialmonkey.com"
 
 
@@ -2101,6 +2101,14 @@ enum {
 	IF_COMB_AP = 0,
 	NUM_IF_COMB,
 };
+
+// See b907c63  / torvalds/linux@57fbcce
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 7, 0)
+#define NL80211_BAND_2GHZ  IEEE80211_BAND_2GHZ
+#define NL80211_BAND_5GHZ IEEE80211_BAND_5GHZ
+#define NUM_NL80211_BANDS IEEE80211_NUM_BANDS
+#define nl80211_band ieee80211_band
+#endif
 
 /*
  * rt2x00 device structure.
